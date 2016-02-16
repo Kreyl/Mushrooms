@@ -16,6 +16,9 @@
 #include "application.h"
 #include "radio_lvl1.h"
 
+#include "PinSnsSettings.h"
+#include "SimpleSensors.h"
+
 int main(void) {
     // ==== Init clock system ====
     Clk.SetupBusDividers(ahbDiv2, apbDiv1, apbDiv1);
@@ -26,13 +29,15 @@ int main(void) {
     // ==== Init Hard & Soft ====
     JtagDisable();
     Uart.Init(115200);
+    Uart.Printf("\rMushroom  AHB=%u; APB1=%u; APB2=%u\r\n", Clk.AHBFreqHz, Clk.APB1FreqHz, Clk.APB2FreqHz);
 
     LedWs.Init();
-    LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
-    Radio.Init();
+    LedWs.SetCommonColorSmoothly(ColorTable[32], csmSimultaneously);
+//    Radio.Init();
     App.PThd = chThdSelf();
     App.Init();
 
-    Uart.Printf("\rMushroom  AHB=%u; APB1=%u; APB2=%u\r\n", Clk.AHBFreqHz, Clk.APB1FreqHz, Clk.APB2FreqHz);
+    PinSensors.Init();
+
     while(true) App.ITask();
 }

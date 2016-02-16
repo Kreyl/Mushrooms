@@ -18,7 +18,7 @@
 
 // Smooth speed
 #ifndef LED_SMOOTH_CONST
-#define LED_SMOOTH_CONST    810
+#define LED_SMOOTH_CONST    360
 #endif
 
 #define LED_DMA_MODE    DMA_PRIORITY_VERYHIGH \

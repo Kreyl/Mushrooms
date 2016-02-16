@@ -45,6 +45,11 @@ typedef void (*ftVoiVoid)(void);
 #define IN_PROGRESS     5
 #define LAST            6
 #define CMD_ERROR       7
+#define WRITE_PROTECT   8
+#define CMD_UNKNOWN     9
+#define EMPTY           10
+#define NOT_A_NUMBER    11
+#define OVERFLOW        12
 
 // Binary semaphores
 #define NOT_TAKEN       false

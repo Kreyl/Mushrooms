@@ -33,9 +33,11 @@ void TmrCheckSleepCallback(void *p);
 class App_t {
 private:
     Color_t IClr;
+    uint32_t Indx=32;
 public:
     Thread *PThd;
     void Init();
+    void SignalEvtI(eventmask_t EvtMsk) { chEvtSignalI(PThd, EvtMsk); }
     void SendEvtRx(uint8_t R, uint8_t G, uint8_t B) {
         IClr.Red = R;
         IClr.Green = G;

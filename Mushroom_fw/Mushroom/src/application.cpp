@@ -11,6 +11,7 @@
 #include "radio_lvl1.h"
 #include "ch.h"
 #include "ws2812b.h"
+#include "buttons.h"
 
 App_t App;
 
@@ -27,7 +28,24 @@ void App_t::ITask() {
 //        chThdSleepMilliseconds(7002);
 
         uint32_t EvtMsk = chEvtWaitAny(ALL_EVENTS);
-        if(EvtMsk & EVTMSK_RX) LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
+//        if(EvtMsk & EVTMSK_RX) LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
+
+        if(EvtMsk & EVTMSK_BUTTONS) {
+            BtnEvtInfo_t EInfo;
+            while(BtnGetEvt(&EInfo) == OK) {
+                if(EInfo.Type == bePress or EInfo.Type == beRepeat) {
+                    if(EInfo.BtnID[0] == btnUp) {
+                        Indx++;
+                        if(Indx >= COLOR_TABLE_SZ) Indx = 0;
+                    }
+                    else {
+                        if(Indx == 0) Indx = (COLOR_TABLE_SZ-1);
+                        else Indx--;
+                    }
+                    LedWs.SetCommonColorSmoothly(ColorTable[Indx]);
+                }
+            }
+        } // if evtmsk
     } // while 1
 }
 
