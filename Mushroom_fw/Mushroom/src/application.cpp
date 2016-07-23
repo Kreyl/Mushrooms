@@ -19,34 +19,14 @@ App_t App;
 __attribute__((noreturn))
 void App_t::ITask() {
     chRegSetThreadName("App");
+    uint32_t Indx = 0;
     while(true) {
-//        LedWs.SetCommonColorSmoothly(clGreen, csmOneByOne);
-//        chThdSleepMilliseconds(18000);
-//        LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
-//        chThdSleepMilliseconds(7002);
-//        LedWs.SetCommonColorSmoothly(clBlack, csmSimultaneously);
-//        chThdSleepMilliseconds(7002);
-
-        uint32_t EvtMsk = chEvtWaitAny(ALL_EVENTS);
-//        if(EvtMsk & EVTMSK_RX) LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
-
-        if(EvtMsk & EVTMSK_BUTTONS) {
-            BtnEvtInfo_t EInfo;
-            while(BtnGetEvt(&EInfo) == OK) {
-                if(EInfo.Type == bePress or EInfo.Type == beRepeat) {
-                    if(EInfo.BtnID[0] == btnUp) {
-                        Indx++;
-                        if(Indx >= COLOR_TABLE_SZ) Indx = 0;
-                    }
-                    else {
-                        if(Indx == 0) Indx = (COLOR_TABLE_SZ-1);
-                        else Indx--;
-                    }
-                    LedWs.SetCommonColorSmoothly(ColorTable[Indx]);
-                }
-            }
-        } // if evtmsk
-    } // while 1
+        LedWs.SetCommonColorSmoothly(ColorTable[Indx], csmOneByOne);
+        chEvtWaitAny(ALL_EVENTS);
+        chThdSleepMilliseconds(4005);
+        Indx++;
+        if(Indx >= COLOR_TABLE_SZ) Indx = 0;
+    }
 }
 
 //void EnterLowPower()    { Clk.SetupBusDividers(ahbDiv8, apbDiv1, apbDiv1); }

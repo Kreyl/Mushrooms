@@ -7,6 +7,7 @@
 
 #include "ws2812b.h"
 #include "cmd_uart_f10x.h"
+#include "application.h"
 
 LedWs_t LedWs;
 
@@ -55,7 +56,6 @@ void LedWs_t::SetCommonColor(Color_t Clr) {
 }
 
 void LedWs_t::SetCommonColorSmoothly(Color_t Clr, ClrSetupMode_t AMode) {
-    if(OnSmoothStart != nullptr) OnSmoothStart();
     chVTReset(&ITmr);
     IMode = AMode;
     for(uint32_t i=0; i<LED_CNT; i++) DesiredClr[i] = Clr;
@@ -68,7 +68,7 @@ void LedWs_t::ITmrHandler() {
     while(IClr[Indx] == DesiredClr[Indx]) {
         Indx++;
         if(Indx >= LED_CNT) {
-            if(OnSmoothEnd != nullptr) OnSmoothEnd();
+            App.SignalEvtI(EVTMSK_LEDS_DONE);
             return; // Setup completed
         }
     }

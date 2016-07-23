@@ -37,7 +37,7 @@ int main(void) {
     App.PThd = chThdSelf();
     App.Init();
 
-    PinSensors.Init();
+//    PinSensors.Init();
 
     while(true) App.ITask();
 }

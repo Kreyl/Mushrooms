@@ -16,7 +16,7 @@
 #define APP_NAME_CRYSTAL
 
 // ==== LED ====
-#define LED_CNT         5
+#define LED_CNT         3
 #define LED_TMR         TIM15
 #define LED_TMR_CHNL    2
 #define LED_GPIO        GPIOB

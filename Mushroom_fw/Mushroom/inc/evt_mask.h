@@ -12,4 +12,6 @@
 #define EVTMSK_RX           EVENT_MASK(1)
 #define EVTMSK_BUTTONS      EVENT_MASK(2)
 
+#define EVTMSK_LEDS_DONE    EVENT_MASK(3)
+
 #endif /* EVT_MASK_H_ */
