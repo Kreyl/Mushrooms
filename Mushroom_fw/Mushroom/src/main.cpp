@@ -16,6 +16,8 @@
 #include "application.h"
 #include "radio_lvl1.h"
 
+#define DELAY_MS    6300
+
 int main(void) {
     // ==== Init clock system ====
     Clk.SetupBusDividers(ahbDiv2, apbDiv1, apbDiv1);
@@ -28,11 +30,26 @@ int main(void) {
     Uart.Init(115200);
 
     LedWs.Init();
-    LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
     Radio.Init();
     App.PThd = chThdSelf();
     App.Init();
 
     Uart.Printf("\rMushroom  AHB=%u; APB1=%u; APB2=%u\r\n", Clk.AHBFreqHz, Clk.APB1FreqHz, Clk.APB2FreqHz);
-    while(true) App.ITask();
+    while(true) {
+        //App.ITask();
+        LedWs.SetCommonColorSmoothly(clWhite, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clRed, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clGreen, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clYellow, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clViolet, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+        LedWs.SetCommonColorSmoothly(clCyan, csmSimultaneously);
+        chThdSleepMilliseconds(DELAY_MS);
+    }
 }
