@@ -1500,7 +1500,7 @@ $EndComp
 Text Label 6050 1400 2    60   ~ 0
 BTN1
 Text Label 6050 1500 2    60   ~ 0
-BTN2
+BTN3
 Text Label 5850 1600 0    60   ~ 0
 ADC_BATTERY
 $Comp
@@ -1518,7 +1518,7 @@ F 6 "48" H 4200 4250 60  0001 C CNN "SolderPoints"
 	1    0    0    -1  
 $EndComp
 Text Label 6050 2200 2    60   ~ 0
-BTN3
+BTN2
 Text Label 2650 2900 0    60   ~ 0
 WS_CTRL
 Text Label 2650 2800 0    60   ~ 0
@@ -1651,9 +1651,9 @@ $EndComp
 Text Label 6200 7250 0    60   ~ 0
 BTN1
 Text Label 6200 7650 0    60   ~ 0
-BTN2
-Text Label 6200 8050 0    60   ~ 0
 BTN3
+Text Label 6200 8050 0    60   ~ 0
+BTN2
 $Comp
 L BUTTON SW2
 U 1 1 589E07AA

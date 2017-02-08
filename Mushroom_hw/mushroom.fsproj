@@ -3,20 +3,15 @@
 	<Version current="1"/>
 	<Format>Project</Format>
 	<Header>
-		<Program name="TopoR" version="6.0"/>
-		<GUID>{1F7F6792-37E1-498F-9559-0B69E8A54F99}</GUID>
+		<Program name="TopoR" version="6.2"/>
+		<GUID>{52521FA4-3B88-4963-A09A-8008C9F6F5F9}</GUID>
 		<Annotation>Project file</Annotation>
 	</Header>
 	<Document>
 		<LocalLibrary />
 		<Pcb>
-			<File path=".\mushroom.fsx" Folder="-1" isopened="1"/>
+			<File path=".\mushroom.fsx" isopened="1"/>
 		</Pcb>
-		<Import>
-			<Specctra>
-			<Path name="D:\Nute\Calmari\Mushrooms\Mushroom_hw\mushroom.dsn"/>
-			</Specctra>
-		</Import>
 		<ARouteSessions>
 		</ARouteSessions>
 	</Document>

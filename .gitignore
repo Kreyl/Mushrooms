@@ -1,1 +1,4 @@
 Mushroom_fw/Mushroom/.settings/language.settings.xml
+*.ses
+*.dsn
+*.kicad_pcb-bak

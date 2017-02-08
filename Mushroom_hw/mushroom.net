@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source D:/Nute/Calmari/Mushrooms/Mushroom_hw/mushroom.sch)
-    (date "08.02.2017 23:08:08")
+    (date "09.02.2017 1:58:17")
     (tool "Eeschema (2017-01-19 revision ba9576b)-makepkg")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -1125,10 +1125,10 @@
       (node (ref F1) (pin 1))
       (node (ref DD1) (pin 24))
       (node (ref DD1) (pin 48)))
-    (net (code 15) (name /BTN2)
+    (net (code 15) (name /BTN3)
       (node (ref DD1) (pin 11))
       (node (ref SW3) (pin 1)))
-    (net (code 16) (name /BTN3)
+    (net (code 16) (name /BTN2)
       (node (ref DD1) (pin 29))
       (node (ref SW4) (pin 1)))
     (net (code 17) (name "Net-(DD1-Pad25)")
