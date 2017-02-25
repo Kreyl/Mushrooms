@@ -26,7 +26,7 @@ void BtnHandler(BtnEvt_t BtnEvt);
 
 int main(void) {
     // ==== Init Clock system ====
-    Clk.SetupPLLDividers(1, pllMul2, plsHSIdiv2);
+    Clk.SetupPLLDividers(1, pllMul4, plsHSIdiv2);
     Clk.SwitchTo(csPLL);
     Clk.UpdateFreqValues();
 
@@ -41,16 +41,12 @@ int main(void) {
     Clk.PrintFreqs();
 
     // Power pin
-//    PwrPin.Init();
-//    PwrPin.SetHi();
+    PwrPin.Init();
+    PwrPin.SetHi();
 
-//    LedWs.Init();
-//    LedWs.ICurrentClr[0] = clRed;
-//    LedWs.ICurrentClr[1] = clGreen;
-//    LedWs.ICurrentClr[2] = clBlue;
-//    LedWs.ISetCurrentColors();
-//    Led.SetColor({18, 0, 0});
-//    Led.SetupSeqEndEvt(EVT_LED_DONE);
+    Effects.Init();
+    Effects.AllTogetherSmoothly(clRed, 360);
+
 //    SimpleSensors::Init();
     // Adc
 //    PinSetupAnalog(BAT_MEAS_PIN);
@@ -63,16 +59,20 @@ int main(void) {
 
 __noreturn
 void App_t::ITask() {
+    ColorHSV_t hsv(0, 100, 100);
     while(true) {
-        chThdSleepMilliseconds(180);
-//        LedWs.ICurrentClr[0] = clRed;
-//        LedWs.ISetCurrentColors();
-//        chThdSleepMilliseconds(180);
-//        LedWs.ICurrentClr[0] = clGreen;
-//        LedWs.ISetCurrentColors();
-//        chThdSleepMilliseconds(180);
-//        LedWs.ICurrentClr[0] = clBlue;
-//        LedWs.ISetCurrentColors();
+        Effects.AllTogetherNow(hsv);
+        hsv.H++;
+        if(hsv.H > 360) hsv.H = 0;
+        chThdSleepMilliseconds(90);
+
+
+//        Effects.AllTogetherSmoothly(clRed, 360);
+//        chThdSleepMilliseconds(2700);
+//        Effects.AllTogetherSmoothly(clGreen, 360);
+//        chThdSleepMilliseconds(2700);
+//        Effects.AllTogetherSmoothly(clBlue, 360);
+//        chThdSleepMilliseconds(2700);
 
 //        __unused eventmask_t Evt = chEvtWaitAny(ALL_EVENTS);
 
@@ -88,7 +88,7 @@ void App_t::ITask() {
 //            Led.IndicateDischarged();
 //        }
 
-//        // Led sequence end: switch off if time to sleep
+        // Led sequence end: switch off if time to sleep
 //        if(Evt & EVT_LED_DONE) {
 //            Uart.Printf("Led Done\r");
 //        }

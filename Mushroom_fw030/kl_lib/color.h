@@ -29,7 +29,7 @@ struct Color_t {
     bool operator == (const Color_t &AColor) const { return (DWord32 == AColor.DWord32); }
     bool operator != (const Color_t &AColor) const { return (DWord32 != AColor.DWord32); }
     Color_t& operator = (const Color_t &Right) { DWord32 = Right.DWord32; return *this; }
-    void Adjust(const Color_t &PColor) {
+    void Adjust(Color_t &PColor) {
         if     (R < PColor.R) R++;
         else if(R > PColor.R) R--;
         if     (G < PColor.G) G++;
@@ -37,7 +37,7 @@ struct Color_t {
         if     (B < PColor.B) B++;
         else if(B > PColor.B) B--;
     }
-    void Adjust(const Color_t &PColor, uint32_t Step) {
+    void Adjust(Color_t &PColor, uint32_t Step) {
         uint32_t ThrsR = 255 - Step;
         if(R < PColor.R) {
             if(R <= ThrsR) R += Step;
@@ -167,6 +167,7 @@ static uint16_t ColorBlend(Color_t fg, Color_t bg, uint16_t alpha) {
 
 #define clLightBlue ((Color_t){90, 90, 255})
 
+__attribute__((__always_inline__, __unused__))
 static inline int32_t Abs32(int32_t w) {
     return (w < 0)? -w : w;
 }
@@ -230,7 +231,21 @@ struct ColorHSV_t {
     }
 
     void ToRGB(Color_t &AColor) { ToRGB(&AColor.R, &AColor.G, &AColor.B); }
+    Color_t ToRGB() {
+        Color_t rgb;
+        ToRGB(&rgb.R, &rgb.G, &rgb.B);
+        return rgb;
+    }
 
     ColorHSV_t(uint16_t AH, uint8_t AS, uint8_t AV) : H(AH), S(AS), V(AV) {}
 } __attribute__((packed));
+
+// Colors
+#define hsvRed       ((ColorHSV_t){  0, 100, 100})
+#define hsvYellow    ((ColorHSV_t){ 60, 100, 100})
+#define hsvGreen     ((ColorHSV_t){120, 100, 100})
+#define hsvCyan      ((ColorHSV_t){180, 100, 100})
+#define hsvBlue      ((ColorHSV_t){240, 100, 100})
+#define hsvMagenta   ((ColorHSV_t){300, 100, 100})
+#define hsvWhite     ((ColorHSV_t){0,   0,   100})
 #endif
