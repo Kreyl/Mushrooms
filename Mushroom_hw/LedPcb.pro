@@ -1,16 +1,5 @@
-update=23/03/2014 16:55:35
-last_client=pcbnew
-[eeschema]
-version=1
-LibDir=D:/libs/Kicad
-NetFmtName=
-RptD_X=0
-RptD_Y=100
-RptLab=1
-LabSize=60
-[eeschema/libraries]
-LibName1=Connectors_kl
-LibName2=Tittar_kl
+update=09.07.2017 12:59:52
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
@@ -40,3 +29,10 @@ LibDir=D:/libs/Kicad
 LibName1=Common_kl
 LibName2=Connectors_kl
 LibName3=Tittar_kl
+[eeschema]
+version=1
+LibDir=D:/libs/Kicad
+[eeschema/libraries]
+LibName1=Connectors_kl
+LibName2=Tittar_kl
+LibName3=pcb_details
