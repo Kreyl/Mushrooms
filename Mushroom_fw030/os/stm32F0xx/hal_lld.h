@@ -326,168 +326,16 @@
 #define STM32_PLS                           STM32_PLS_LEV0
 #endif
 
-/**
- * @brief   Enables or disables the HSI clock source.
- */
-#if !defined(STM32_HSI_ENABLED) || defined(__DOXYGEN__)
-#define STM32_HSI_ENABLED                   TRUE
-#endif
-
-/**
- * @brief   Enables or disables the HSI14 clock source.
- */
-#if !defined(STM32_HSI14_ENABLED) || defined(__DOXYGEN__)
-#define STM32_HSI14_ENABLED                 TRUE
-#endif
-
-/**
- * @brief   Enables or disables the HSI48 clock source.
- */
-#if !defined(STM32_HSI48_ENABLED) || defined(__DOXYGEN__)
-#define STM32_HSI48_ENABLED                 FALSE
-#endif
-
-/**
- * @brief   Enables or disables the LSI clock source.
- */
-#if !defined(STM32_LSI_ENABLED) || defined(__DOXYGEN__)
-#define STM32_LSI_ENABLED                   FALSE
-#endif
-
-/**
- * @brief   Enables or disables the HSE clock source.
- */
-#if !defined(STM32_HSE_ENABLED) || defined(__DOXYGEN__)
-#define STM32_HSE_ENABLED                   TRUE
-#endif
-
-/**
- * @brief   Enables or disables the LSE clock source.
- */
-#if !defined(STM32_LSE_ENABLED) || defined(__DOXYGEN__)
-#define STM32_LSE_ENABLED                   FALSE
-#endif
-
-/**
- * @brief   Main clock source selection.
- * @note    If the selected clock source is not the PLL then the PLL is not
- *          initialized and started.
- * @note    The default value is calculated for a 48MHz system clock from
- *          a 8MHz crystal using the PLL.
- */
-#if !defined(STM32_SW) || defined(__DOXYGEN__)
-#define STM32_SW                            STM32_SW_PLL
-#endif
-
-/**
- * @brief   Clock source for the PLL.
- * @note    This setting has only effect if the PLL is selected as the
- *          system clock source.
- * @note    The default value is calculated for a 48MHz system clock from
- *          a 8MHz crystal using the PLL.
- */
-#if !defined(STM32_PLLSRC) || defined(__DOXYGEN__)
-#define STM32_PLLSRC                        STM32_PLLSRC_HSE
-#endif
-
-/**
- * @brief   Crystal PLL pre-divider.
- * @note    This setting has only effect if the PLL is selected as the
- *          system clock source.
- * @note    The default value is calculated for a 72MHz system clock from
- *          a 8MHz crystal using the PLL.
- */
-#if !defined(STM32_PREDIV_VALUE) || defined(__DOXYGEN__)
-#define STM32_PREDIV_VALUE                  1
-#endif
-
-/**
- * @brief   PLL multiplier value.
- * @note    The allowed range is 2...16.
- * @note    The default value is calculated for a 48MHz system clock from
- *          a 8MHz crystal using the PLL.
- */
-#if !defined(STM32_PLLMUL_VALUE) || defined(__DOXYGEN__)
-#define STM32_PLLMUL_VALUE                  6
-#endif
-
-/**
- * @brief   AHB prescaler value.
- * @note    The default value is calculated for a 48MHz system clock from
- *          a 8MHz crystal using the PLL.
- */
-#if !defined(STM32_HPRE) || defined(__DOXYGEN__)
-#define STM32_HPRE                          STM32_HPRE_DIV1
-#endif
-
-/**
- * @brief   APB1 prescaler value.
- */
-#if !defined(STM32_PPRE) || defined(__DOXYGEN__)
-#define STM32_PPRE                          STM32_PPRE_DIV1
-#endif
-
-/**
- * @brief   MCO pin setting.
- */
-#if !defined(STM32_MCOSEL) || defined(__DOXYGEN__)
-#define STM32_MCOSEL                        STM32_MCOSEL_NOCLOCK
-#endif
-
-/**
- * @brief   MCO divider setting.
- */
-#if !defined(STM32_MCOPRE) || defined(__DOXYGEN__)
-#define STM32_MCOPRE                        STM32_MCOPRE_DIV1
-#endif
-
-/**
- * @brief   MCO PLL divider setting.
- */
-#if !defined(STM32_PLLNODIV) || defined(__DOXYGEN__)
-#define STM32_PLLNODIV                      STM32_PLLNODIV_DIV2
-#endif
-
-/**
- * @brief USB Clock source.
- */
-#if !defined(STM32_USBSW) || defined(__DOXYGEN__)
-#define STM32_USBSW                         STM32_USBSW_HSI48
-#endif
-
-/**
- * @brief   CEC clock source.
- */
-#if !defined(STM32_CECSW) || defined(__DOXYGEN__)
-#define STM32_CECSW                         STM32_CECSW_HSI
-#endif
-
-/**
- * @brief   I2C1 clock source.
- */
-#if !defined(STM32_I2C1SW) || defined(__DOXYGEN__)
-#define STM32_I2C1SW                        STM32_I2C1SW_HSI
-#endif
-
-/**
- * @brief   USART1 clock source.
- */
-#if !defined(STM32_USART1SW) || defined(__DOXYGEN__)
-#define STM32_USART1SW                      STM32_USART1SW_PCLK
-#endif
-
-/**
- * @brief   RTC clock source.
- */
-#if !defined(STM32_RTCSEL) || defined(__DOXYGEN__)
-#define STM32_RTCSEL                        STM32_RTCSEL_LSI
-#endif
-/** @} */
-
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
 
+/*
+ * Configuration-related checks.
+ */
+#if !defined(STM32F0xx_MCUCONF)
+#error "Using a wrong mcuconf.h file, STM32F0xx_MCUCONF not defined"
+#endif
 
 /* Various helpers.*/
 #include "nvic.h"
@@ -499,7 +347,6 @@
 extern "C" {
 #endif
   void hal_lld_init(void);
-  void stm32_clock_init(void);
 #ifdef __cplusplus
 }
 #endif

@@ -6,8 +6,6 @@
  */
 
 #include "ws2812b.h"
-#include "evt_mask.h"
-#include "main.h"
 
 #define LED_DMA_MODE    DMA_PRIORITY_HIGH \
                         | STM32_DMA_CR_MSIZE_HWORD \
@@ -38,11 +36,11 @@ void LedTxcIrq(void *p, uint32_t flags) {
 
 void LedWs_t::Init() {
     PinSetupAlterFunc(LEDWS_PIN);
-    ISpi.Setup(boMSB, cpolIdleLow, cphaFirstEdge, sbFdiv2, bitn16);
+//    ISpi.Setup(boMSB, cpolIdleLow, cphaFirstEdge, sbFdiv2, bitn16);
     ISpi.Enable();
     ISpi.EnableTxDma();
 
-    Uart.Printf("Len=%u\r", TOTAL_W_CNT);
+    Printf("Len=%u\r", TOTAL_W_CNT);
 
     // Zero buffer
     for(uint32_t i=TOTAL_W_CNT-RST_W_CNT-1; i<TOTAL_W_CNT; i++) IBuf[i] = 0;
@@ -134,7 +132,7 @@ void Effects_t::ITask() {
                 } // for
                 LedWs.ISetCurrentColors();
                 if(Delay == 0) {    // Setup completed
-                    App.SignalEvt(EVT_LED_DONE);
+//                    App.SignalEvt(EVT_LED_DONE);
                     IState = effIdle;
                 }
                 else chThdSleepMilliseconds(Delay);
@@ -156,14 +154,14 @@ void Effects_t::AllTogetherNow(Color_t &Color) {
     IState = effIdle;
     for(uint32_t i=0; i<LED_CNT; i++) LedWs.ICurrentClr[i] = Color;
     LedWs.ISetCurrentColors();
-    App.SignalEvt(EVT_LED_DONE);
+//    App.SignalEvt(EVT_LED_DONE);
 }
 void Effects_t::AllTogetherNow(ColorHSV_t &Color) {
     IState = effIdle;
     Color_t rgb = Color.ToRGB();
     for(uint32_t i=0; i<LED_CNT; i++) LedWs.ICurrentClr[i] = rgb;
     LedWs.ISetCurrentColors();
-    App.SignalEvt(EVT_LED_DONE);
+//    App.SignalEvt(EVT_LED_DONE);
 }
 
 void Effects_t::AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue) {
@@ -226,7 +224,7 @@ uint32_t LedChunk_t::ProcessAndGetDelay() {
         uint32_t tmp = Effects.ICalcDelayN(n);  // }
         if(tmp > Delay) Delay = tmp;            // } Calculate Delay
         if(Delay!= 0) LedWs.ICurrentClr[n].Adjust(Effects.DesiredClr[n]); // Adjust current color
-    } while(GetNext(&n) == OK);
+    } while(GetNext(&n) == retvOk);
     return Delay;
 }
 
@@ -241,12 +239,12 @@ uint8_t LedChunk_t::GetNext(int *PCurrent) {
     int curr = *PCurrent;
     if(curr == End) {
         *PCurrent = Start;
-        return OVERFLOW;
+        return retvOverflow;
     }
     else {
         if(End > Start) *PCurrent = curr + 1;
         else *PCurrent = curr - 1;
-        return OK;
+        return retvOk;
     }
 }
 

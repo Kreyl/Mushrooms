@@ -56,7 +56,7 @@
 void halInit(void) {
 
   /* Initializes the OS Abstraction Layer.*/
-  osalInit();   // @KL: nothing here
+  osalInit();
 
   /* Platform low level initializations.*/
   hal_lld_init();
@@ -128,7 +128,6 @@ void halInit(void) {
   halCommunityInit();
 #endif
 #endif
-
 
 /*
  *  The ST driver is a special case, it is only initialized if the OSAL is

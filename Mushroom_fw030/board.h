@@ -11,7 +11,7 @@
 
 // ==== General ====
 #define BOARD_NAME          "CrystalMushroom"
-#define APP_NAME            "Crystal02"
+#define APP_NAME            "Mushroom"
 
 // MCU type as defined in the ST header.
 #define STM32F030x8
@@ -22,6 +22,7 @@
 #define SYS_TIM_CLK             (Clk.APBFreqHz)
 
 #define SIMPLESENSORS_ENABLED   TRUE
+#define BUTTONS_ENABLED         TRUE
 #define ADC_REQUIRED            FALSE
 #define I2C1_ENABLED            FALSE
 #define I2C_USE_SEMAPHORE       FALSE
@@ -54,9 +55,10 @@
 #endif
 
 #if 1 // ========================== USART ======================================
-#define UART            USART1
-#define UART_TX_REG     UART->TDR
-#define UART_RX_REG     UART->RDR
+#define PRINTF_FLOAT_EN FALSE
+#define CMD_UART        USART1
+#define UART_USE_INDEPENDENT_CLK    TRUE
+#define UART_TXBUF_SZ   1024
 #endif
 
 #if ADC_REQUIRED // ======================= Inner ADC ==========================

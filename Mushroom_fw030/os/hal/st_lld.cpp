@@ -75,7 +75,7 @@
 
 #define ST_HANDLER                          STM32_TIM3_HANDLER
 #define ST_NUMBER                           STM32_TIM3_NUMBER
-//#define ST_CLOCK_SRC                        STM32_TIMCLK1 // @KL
+#define ST_CLOCK_SRC                        STM32_TIMCLK1
 #define ST_ENABLE_CLOCK()                   rccEnableTIM3(FALSE)
 #if defined(STM32F1XX)
 #define ST_ENABLE_STOP()                    DBGMCU->CR |= DBGMCU_CR_DBG_TIM3_STOP
@@ -144,16 +144,9 @@
 
 #define ST_HANDLER                          STM32_TIM14_HANDLER
 #define ST_NUMBER                           STM32_TIM14_NUMBER
-//#define ST_CLOCK_SRC                        STM32_TIMCLK1 // @KL
+#define ST_CLOCK_SRC                        STM32_TIMCLK1
 #define ST_ENABLE_CLOCK()                   rccEnableTIM14(FALSE)
-#if defined(STM32F1XX)
-#define ST_ENABLE_STOP()                    DBGMCU->CR |= DBGMCU_CR_DBG_TIM3_STOP
-#elif defined(STM32L4XX)
-#define ST_ENABLE_STOP()                    DBGMCU->APB1FZR1 |= DBGMCU_APB1FZR1_DBG_TIM3_STOP
-#else
 #define ST_ENABLE_STOP()                    DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_TIM14_STOP
-#endif
-
 
 #elif STM32_ST_USE_TIMER == 21
 #if (OSAL_ST_RESOLUTION == 32) && !STM32_TIM21_IS_32BITS
@@ -256,12 +249,12 @@ OSAL_IRQ_HANDLER(SysTick_Handler) {
 
 #if (OSAL_ST_MODE == OSAL_ST_MODE_FREERUNNING) || defined(__DOXYGEN__)
 /**
- * @brief   TIMx interrupt handler.
+ * @brief   TIM2 interrupt handler.
  * @details This interrupt is used for system tick in free running mode.
  *
  * @isr
  */
-extern "C" {
+extern "C"
 OSAL_IRQ_HANDLER(ST_HANDLER) {
 
   OSAL_IRQ_PROLOGUE();
@@ -278,7 +271,6 @@ OSAL_IRQ_HANDLER(ST_HANDLER) {
   }
 
   OSAL_IRQ_EPILOGUE();
-}
 }
 #endif /* OSAL_ST_MODE == OSAL_ST_MODE_FREERUNNING */
 

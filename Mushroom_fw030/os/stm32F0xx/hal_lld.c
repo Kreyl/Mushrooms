@@ -25,12 +25,8 @@
 #include "hal.h"
 
 /*===========================================================================*/
-/* Driver local definitions.                                                 */
+/* Driver interrupt handlers.                                                */
 /*===========================================================================*/
-
-#define STM32_PLLXTPRE_OFFSET   17          /**< PLLXTPRE offset             */
-#define STM32_PLLXTPRE_MASK     0x01        /**< PLLXTPRE mask               */
-
 
 #if defined(STM32_DMA_REQUIRED) || defined(__DOXYGEN__)
 #if defined(STM32_DMA1_CH23_HANDLER) || defined(__DOXYGEN__)

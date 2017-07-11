@@ -42,6 +42,27 @@
 #include "hal_buffers.h"
 #include "hal_queues.h"
 
+/* Normal drivers.*/
+//#include "pal.h"
+//#include "adc.h"
+//#include "can.h"
+//#include "dac.h"
+//#include "ext.h"
+//#include "gpt.h"
+//#include "i2c.h"
+//#include "i2s.h"
+//#include "icu.h"
+//#include "mac.h"
+//#include "mii.h"
+//#include "pwm.h"
+//#include "rtc.h"
+//#include "serial.h"
+//#include "sdc.h"
+//#include "spi.h"
+//#include "uart.h"
+//#include "usb.h"
+//#include "wdg.h"
+
 /*
  *  The ST driver is a special case, it is only included if the OSAL is
  *  configured to require it.
@@ -49,6 +70,10 @@
 #if OSAL_ST_MODE != OSAL_ST_MODE_NONE
 #include "st.h"
 #endif
+
+/* Complex drivers.*/
+//#include "mmc_spi.h"
+//#include "serial_usb.h"
 
 /* Community drivers.*/
 #if defined(HAL_USE_COMMUNITY) || defined(__DOXYGEN__)
@@ -78,7 +103,7 @@
 /**
  * @brief   HAL version string.
  */
-#define HAL_VERSION             "4.0.7"
+#define HAL_VERSION             "4.0.8"
 
 /**
  * @brief   HAL version major number.
@@ -93,7 +118,7 @@
 /**
  * @brief   HAL version patch number.
  */
-#define CH_HAL_PATCH            7
+#define CH_HAL_PATCH            8
 /** @} */
 
 /**

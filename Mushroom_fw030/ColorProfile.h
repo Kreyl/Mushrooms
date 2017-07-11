@@ -8,7 +8,7 @@
 #pragma once
 
 #include "color.h"
-#include "SaveToFlash.h"
+//#include "SaveToFlash.h"
 
 // ========= Constants ==========
 #define SMOOTH_CONST    360 // Fade-in and Fade-out speed (lower is faster)
@@ -42,17 +42,17 @@ public:
     void SelectNext() {
         ClrProfileIndx++;
         if(ClrProfileIndx >= CLR_PROFILE_CNT) ClrProfileIndx = 0;
-        Uart.Printf("Profile %u\r", ClrProfileIndx);
+        Printf("Profile %u\r", ClrProfileIndx);
     }
     void Load() {
         chSysLock();
-        Flash::Load(&ClrProfileIndx, 4);
+//        Flash::Load(&ClrProfileIndx, 4);
         chSysUnlock();
         if(ClrProfileIndx >= CLR_PROFILE_CNT) ClrProfileIndx = 0;
-        Uart.Printf("Profile loaded: %u\r", ClrProfileIndx);
+        Printf("Profile loaded: %u\r", ClrProfileIndx);
     }
     void Save() {
-        if(Flash::Save(&ClrProfileIndx, 4) == OK) Uart.Printf("Saved\r");
+//        if(Flash::Save(&ClrProfileIndx, 4) == OK) Uart.Printf("Saved\r");
     }
     Color_t GetClrSteady() { return ClrProfile[ClrProfileIndx].Steady; }
     Color_t GetClrImpact() { return ClrProfile[ClrProfileIndx].Impact; }

@@ -5,8 +5,10 @@
  *      Author: g.kruglov
  */
 
-#include <ColorProfile.h>
-#include "main.h"
+#include "kl_lib.h"
+#include "MsgQ.h"
+#include "shell.h"
+//#include "ColorProfile.h"
 #include "SimpleSensors.h"
 #include "buttons.h"
 #include "board.h"
@@ -14,38 +16,44 @@
 #include "ws2812b.h"
 
 #if 1 // ======================== Variables and defines ========================
-App_t App;
+// Forever
+EvtMsgQ_t<EvtMsg_t, MAIN_EVT_Q_LEN> EvtQMain;
+extern CmdUart_t Uart;
+void OnCmd(Shell_t *PShell);
+void ITask();
+
+
 PinOutput_t PwrPin { PWR_EN_PIN };
-TmrKL_t TmrAdc {MS2ST(1530), EVT_SAMPLING, tktPeriodic};
-Profile_t Profile;
+//TmrKL_t TmrAdc {MS2ST(1530), EVT_SAMPLING, tktPeriodic};
+//Profile_t Profile;
 
-bool AdcFirstConv = true;
+//bool AdcFirstConv = true;
 
-void BtnHandler(BtnEvt_t BtnEvt);
+//void BtnHandler(BtnEvt_t BtnEvt);
 #endif
 
 int main(void) {
     // ==== Init Clock system ====
-    Clk.SetupPLLDividers(1, pllMul4, plsHSIdiv2);
-    Clk.SwitchTo(csPLL);
+//    Clk.SetupPLLDividers(1, pllMul4, plsHSIdiv2);
+//    Clk.SwitchTo(csPLL);
     Clk.UpdateFreqValues();
 
     // === Init OS ===
     halInit();
     chSysInit();
-    App.InitThread();
 
     // ==== Init hardware ====
-    Uart.Init(115200, UART_GPIO, UART_TX_PIN, UART_GPIO, UART_RX_PIN);
-    Uart.Printf("\r%S %S\r", APP_NAME, BUILD_TIME);
+    EvtQMain.Init();
+    Uart.Init(115200);
+    Printf("\r%S %S\r", APP_NAME, BUILD_TIME);
     Clk.PrintFreqs();
 
     // Power pin
-    PwrPin.Init();
-    PwrPin.SetHi();
+//    PwrPin.Init();
+//    PwrPin.SetHi();
 
-    Effects.Init();
-    Effects.AllTogetherSmoothly(clRed, 360);
+//    Effects.Init();
+//    Effects.AllTogetherSmoothly(clRed, 360);
 
 //    SimpleSensors::Init();
     // Adc
@@ -54,17 +62,28 @@ int main(void) {
 //    Adc.EnableVRef();
 //    TmrAdc.InitAndStart();
     // Main cycle
-    App.ITask();
+    ITask();
 }
 
 __noreturn
-void App_t::ITask() {
+void ITask() {
     ColorHSV_t hsv(0, 100, 100);
     while(true) {
-        Effects.AllTogetherNow(hsv);
-        hsv.H++;
-        if(hsv.H > 360) hsv.H = 0;
-        chThdSleepMilliseconds(90);
+        EvtMsg_t Msg = EvtQMain.Fetch(TIME_INFINITE);
+        switch(Msg.ID) {
+            case evtIdShellCmd:
+                OnCmd((Shell_t*)Msg.Ptr);
+                ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
+                break;
+
+            default: break;
+        } // switch
+
+
+//        Effects.AllTogetherNow(hsv);
+//        hsv.H++;
+//        if(hsv.H > 360) hsv.H = 0;
+//        chThdSleepMilliseconds(90);
 
 
 //        Effects.AllTogetherSmoothly(clRed, 360);
@@ -116,46 +135,46 @@ void App_t::ITask() {
     } // while true
 } // App_t::ITask()
 
-void BtnHandler(BtnEvt_t BtnEvt) {
+//void BtnHandler(BtnEvt_t BtnEvt) {
 //    if(BtnEvt == beShortPress) Uart.Printf("Btn Short\r");
 //    if(BtnEvt == beLongPress)  Uart.Printf("Btn Long\r");
 //    if(BtnEvt == beRelease)    Uart.Printf("Btn Release\r");
-}
+//}
 
 #if UART_RX_ENABLED // ================= Command processing ====================
-void App_t::OnCmd(Shell_t *PShell) {
+void OnCmd(Shell_t *PShell) {
 	Cmd_t *PCmd = &PShell->Cmd;
     __attribute__((unused)) int32_t dw32 = 0;  // May be unused in some configurations
 //    Uart.Printf("%S\r", PCmd->Name);
     // Handle command
     if(PCmd->NameIs("Ping")) {
-        PShell->Ack(OK);
+        PShell->Ack(retvOk);
     }
 
-    else if(PCmd->NameIs("HSL")) {
-        ColorHSL_t ClrHsl(0,0,0);
-        if(PCmd->GetNextUint16(&ClrHsl.H) != OK) return;
-        if(PCmd->GetNextByte(&ClrHsl.S)   != OK) return;
-        if(PCmd->GetNextByte(&ClrHsl.L)   != OK) return;
-        Color_t Clr;
-        ClrHsl.ToRGB(Clr);
-//        Led.SetColor(Clr, 100);
-        PShell->Ack(OK);
-    }
+//    else if(PCmd->NameIs("HSL")) {
+//        ColorHSL_t ClrHsl(0,0,0);
+//        if(PCmd->GetNextUint16(&ClrHsl.H) != OK) return;
+//        if(PCmd->GetNextByte(&ClrHsl.S)   != OK) return;
+//        if(PCmd->GetNextByte(&ClrHsl.L)   != OK) return;
+//        Color_t Clr;
+//        ClrHsl.ToRGB(Clr);
+////        Led.SetColor(Clr, 100);
+//        PShell->Ack(OK);
+//    }
 
-    else if(PCmd->NameIs("HSV")) {
-        ColorHSV_t ClrHsv(0,0,0);
-        if(PCmd->GetNextUint16(&ClrHsv.H) != OK) return;
-        if(PCmd->GetNextByte(&ClrHsv.S)   != OK) return;
-        if(PCmd->GetNextByte(&ClrHsv.V)   != OK) return;
-        Color_t Clr;
-        ClrHsv.ToRGB(Clr);
-//        Clr.Print();
-//        Uart.Printf("{%u; %u; %u}\r", R, G, B);
-//        Led.SetColor(Clr, 100);
-        PShell->Ack(OK);
-    }
+//    else if(PCmd->NameIs("HSV")) {
+//        ColorHSV_t ClrHsv(0,0,0);
+//        if(PCmd->GetNextUint16(&ClrHsv.H) != OK) return;
+//        if(PCmd->GetNextByte(&ClrHsv.S)   != OK) return;
+//        if(PCmd->GetNextByte(&ClrHsv.V)   != OK) return;
+//        Color_t Clr;
+//        ClrHsv.ToRGB(Clr);
+////        Clr.Print();
+////        Uart.Printf("{%u; %u; %u}\r", R, G, B);
+////        Led.SetColor(Clr, 100);
+//        PShell->Ack(OK);
+//    }
 
-    else PShell->Ack(CMD_UNKNOWN);
+    else PShell->Ack(retvCmdUnknown);
 }
 #endif

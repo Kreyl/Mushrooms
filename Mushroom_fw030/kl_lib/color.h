@@ -9,13 +9,15 @@
 
 #include "inttypes.h"
 #include <sys/cdefs.h>
-#include "uart.h"
+#include "shell.h"
+
+#define LUM_MAX     100
 
 // Mixing two colors
 #define ClrMix(C, B, L)     ((C * L + B * (255 - L)) / 255)
 
 // Smooth delay
-static inline uint32_t ClrCalcDelay(uint32_t AValue, uint32_t Smooth) {
+static inline uint32_t ClrCalcDelay(uint16_t AValue, uint32_t Smooth) {
     return (uint32_t)((Smooth / (AValue+4)) + 1);
 }
 
@@ -23,21 +25,23 @@ struct Color_t {
     union {
         uint32_t DWord32;
         struct {
-            uint8_t R, G, B;
+            uint8_t R, G, B, Lum;
         };
     };
     bool operator == (const Color_t &AColor) const { return (DWord32 == AColor.DWord32); }
     bool operator != (const Color_t &AColor) const { return (DWord32 != AColor.DWord32); }
     Color_t& operator = (const Color_t &Right) { DWord32 = Right.DWord32; return *this; }
-    void Adjust(Color_t &PColor) {
+    void Adjust(const Color_t &PColor) {
         if     (R < PColor.R) R++;
         else if(R > PColor.R) R--;
         if     (G < PColor.G) G++;
         else if(G > PColor.G) G--;
         if     (B < PColor.B) B++;
         else if(B > PColor.B) B--;
+        if     (Lum < PColor.Lum) Lum++;
+        else if(Lum > PColor.Lum) Lum--;
     }
-    void Adjust(Color_t &PColor, uint32_t Step) {
+    void Adjust(const Color_t &PColor, uint32_t Step) {
         uint32_t ThrsR = 255 - Step;
         if(R < PColor.R) {
             if(R <= ThrsR) R += Step;
@@ -65,11 +69,19 @@ struct Color_t {
             if(B >= Step) B -= Step;
             else B = 0;
         }
+
+        if(Lum < PColor.Lum) {
+            Lum += Step;
+            if(Lum > LUM_MAX) Lum = LUM_MAX;
+        }
+        else if(Lum > PColor.Lum) {
+            if(Lum >= Step) Lum -= Step;
+            else Lum = 0;
+        }
     }
     void FromRGB(uint8_t Red, uint8_t Green, uint8_t Blue) { R = Red; G = Green; B = Blue; }
     void ToRGB(uint8_t *PR, uint8_t *PG, uint8_t *PB) const { *PR = R; *PG = G; *PB = B; }
     bool IsEqualRGB(uint8_t Red, uint8_t Green, uint8_t Blue) { return (R == Red and G == Green and B == Blue); }
-    void SetSameRGB(const Color_t &AColor) { R = AColor.R; G = AColor.G; B = AColor.B; }
     uint8_t RGBTo565_HiByte() const {
         uint32_t rslt = R & 0b11111000;
         rslt |= G >> 5;
@@ -92,18 +104,19 @@ struct Color_t {
         B = ClrMix(Fore.B, Back.B, Brt);
     }
     uint32_t DelayToNextAdj(const Color_t &AClr, uint32_t SmoothValue) {
-        uint32_t Delay, DelayTmp;
+        uint32_t Delay, Delay2;
         Delay = (R == AClr.R)? 0 : ClrCalcDelay(R, SmoothValue);
-        DelayTmp = (G == AClr.G)? 0 : ClrCalcDelay(G, SmoothValue);
-        if(DelayTmp > Delay) Delay = DelayTmp;
-        DelayTmp = (B == AClr.B)? 0 : ClrCalcDelay(B, SmoothValue);
-        if(DelayTmp > Delay) Delay = DelayTmp;
-        return Delay;
+        Delay2 = (G == AClr.G)? 0 : ClrCalcDelay(G, SmoothValue);
+        if(Delay2 > Delay) Delay = Delay2;
+        Delay2 = (B == AClr.B)? 0 : ClrCalcDelay(B, SmoothValue);
+        if(Delay2 > Delay) Delay = Delay2;
+        Delay2 = (Lum == AClr.Lum)? 0 : ClrCalcDelay(Lum, SmoothValue);
+        return (Delay2 > Delay)? Delay2 : Delay;
     }
-    void Print() { Uart.Printf("{%u, %u, %u}", R, G, B); }
-    void PrintI() { Uart.PrintfI("{%u, %u, %u}", R, G, B); }
-    Color_t() : R(0), G(0), B(0) {}
-    Color_t(uint8_t AR, uint8_t AG, uint8_t AB) : R(AR), G(AG), B(AB) {}
+    void Print() { Printf("{%u, %u, %u; %u}\r", R, G, B, Lum); }
+    Color_t() : R(0), G(0), B(0), Lum(LUM_MAX) {}
+    Color_t(uint8_t AR, uint8_t AG, uint8_t AB) : R(AR), G(AG), B(AB), Lum(LUM_MAX) {}
+    Color_t(uint8_t AR, uint8_t AG, uint8_t AB, uint8_t ALum) : R(AR), G(AG), B(AB), Lum(ALum) {}
 } __attribute__((packed));
 
 
@@ -167,10 +180,11 @@ static uint16_t ColorBlend(Color_t fg, Color_t bg, uint16_t alpha) {
 
 #define clLightBlue ((Color_t){90, 90, 255})
 
-__attribute__((__always_inline__, __unused__))
+__attribute__((__always_inline__))
 static inline int32_t Abs32(int32_t w) {
     return (w < 0)? -w : w;
 }
+
 #if 1 // ============================== HSL ====================================
 struct ColorHSL_t {
     union {
