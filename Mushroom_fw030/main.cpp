@@ -22,7 +22,7 @@ extern CmdUart_t Uart;
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-
+ColorHSV_t hsv(319, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
 //TmrKL_t TmrAdc {MS2ST(1530), EVT_SAMPLING, tktPeriodic};
 //Profile_t Profile;
@@ -53,7 +53,7 @@ int main(void) {
     PwrPin.SetHi();
 
     Effects.Init();
-    Effects.AllTogetherSmoothly(clRed, 360);
+    Effects.AllTogetherNow(hsv);
 
     SimpleSensors::Init();
     // Adc
@@ -67,7 +67,6 @@ int main(void) {
 
 __noreturn
 void ITask() {
-    ColorHSV_t hsv(0, 100, 100);
     while(true) {
         EvtMsg_t Msg = EvtQMain.Fetch(TIME_INFINITE);
         switch(Msg.ID) {
@@ -77,7 +76,17 @@ void ITask() {
                 break;
 
             case evtIdButtons:
-                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+                if(Msg.BtnEvtInfo.BtnID == 1) {
+                    if(hsv.H < 360) hsv.H++;
+                    else hsv.H = 0;
+                }
+                else if(Msg.BtnEvtInfo.BtnID == 2) {
+                    if(hsv.H > 0) hsv.H--;
+                    else hsv.H = 360;
+                }
+                Printf("HSV %u\r", hsv.H);
+                Effects.AllTogetherNow(hsv);
                 break;
 
             default: break;

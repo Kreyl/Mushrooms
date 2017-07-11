@@ -43,7 +43,7 @@ void LedWs_t::Init() {
     Printf("Len=%u\r", TOTAL_W_CNT);
 
     // Zero buffer
-    for(int i=0; i<RST_W_CNT; i++) IBuf[i] = 0;
+    for(int i=0; i<TOTAL_W_CNT; i++) IBuf[i] = 0;
 
     // ==== DMA ====
     dmaStreamAllocate     (LEDWS_DMA, IRQ_PRIO_LOW, LedTxcIrq, NULL);
@@ -79,7 +79,7 @@ void LedWs_t::AppendBitsMadeOfByte(uint8_t Byte) {
 }
 
 void LedWs_t::ISetCurrentColors() {
-    PBuf = IBuf + RST_W_CNT;    // First words are zero to form reset
+    PBuf = IBuf + (RST_W_CNT / 2);    // First words are zero to form reset
     // Fill bit buffer
     for(uint32_t i=0; i<LED_CNT; i++) {
         AppendBitsMadeOfByte(ICurrentClr[i].G);
@@ -178,6 +178,20 @@ void Effects_t::AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue) {
         chSysUnlock();
     }
 }
+
+//void Effects_t::AllTogetherSmoothly(ColorHSV_t Color, uint32_t ASmoothValue) {
+//    if(ASmoothValue == 0) AllTogetherNow(Color);
+//    else {
+//        chSysLock();
+//        for(uint32_t i=0; i<LED_CNT; i++) {
+//            DesiredClr[i] = Color;
+//            SmoothValue[i] = ASmoothValue;
+//        }
+//        IState = effAllSmoothly;
+//        chSchWakeupS(PThd, MSG_OK);
+//        chSysUnlock();
+//    }
+//}
 
 void Effects_t::ChunkRunningRandom(Color_t Color, uint32_t NLeds, uint32_t ASmoothValue) {
     chSysLock();

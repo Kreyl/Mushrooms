@@ -24,7 +24,7 @@
 #define LED_CNT             3   // Number of WS2812 LEDs
 
 #define SEQ_LEN             8
-#define RST_W_CNT           2 // zero words before data to produce reset
+#define RST_W_CNT           30 // zero words before data to produce reset
 
 // SPI16 Buffer (no tuning required)
 #define DATA_BIT_CNT        (LED_CNT * 3 * 8 * SEQ_LEN)   // Each led has 3 channels 8 bit each
@@ -82,6 +82,7 @@ public:
     void AllTogetherNow(Color_t Color);
     void AllTogetherNow(ColorHSV_t Color);
     void AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue);
+//    void AllTogetherSmoothly(ColorHSV_t Color, uint32_t ASmoothValue);
     void ChunkRunningRandom(Color_t Color, uint32_t NLeds, uint32_t ASmoothValue);
     // Inner use
     uint32_t ICalcDelayN(uint32_t n);
