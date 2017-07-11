@@ -36,14 +36,14 @@ void LedTxcIrq(void *p, uint32_t flags) {
 
 void LedWs_t::Init() {
     PinSetupAlterFunc(LEDWS_PIN);
-//    ISpi.Setup(boMSB, cpolIdleLow, cphaFirstEdge, sbFdiv2, bitn16);
+    ISpi.Setup(boMSB, cpolIdleLow, cphaFirstEdge, sclkDiv2, bitn16);
     ISpi.Enable();
     ISpi.EnableTxDma();
 
     Printf("Len=%u\r", TOTAL_W_CNT);
 
     // Zero buffer
-    for(uint32_t i=TOTAL_W_CNT-RST_W_CNT-1; i<TOTAL_W_CNT; i++) IBuf[i] = 0;
+    for(int i=0; i<RST_W_CNT; i++) IBuf[i] = 0;
 
     // ==== DMA ====
     dmaStreamAllocate     (LEDWS_DMA, IRQ_PRIO_LOW, LedTxcIrq, NULL);
@@ -79,8 +79,8 @@ void LedWs_t::AppendBitsMadeOfByte(uint8_t Byte) {
 }
 
 void LedWs_t::ISetCurrentColors() {
+    PBuf = IBuf + RST_W_CNT;    // First words are zero to form reset
     // Fill bit buffer
-    PBuf = IBuf;
     for(uint32_t i=0; i<LED_CNT; i++) {
         AppendBitsMadeOfByte(ICurrentClr[i].G);
         AppendBitsMadeOfByte(ICurrentClr[i].R);
@@ -145,18 +145,19 @@ void Effects_t::ITask() {
 
 void Effects_t::Init() {
     LedWs.Init();
+    AllTogetherNow(clBlack);
     // Thread
     PThd = chThdCreateStatic(waEffectsThread, sizeof(waEffectsThread), HIGHPRIO, (tfunc_t)EffectsThread, NULL);
 }
 
 
-void Effects_t::AllTogetherNow(Color_t &Color) {
+void Effects_t::AllTogetherNow(Color_t Color) {
     IState = effIdle;
     for(uint32_t i=0; i<LED_CNT; i++) LedWs.ICurrentClr[i] = Color;
     LedWs.ISetCurrentColors();
 //    App.SignalEvt(EVT_LED_DONE);
 }
-void Effects_t::AllTogetherNow(ColorHSV_t &Color) {
+void Effects_t::AllTogetherNow(ColorHSV_t Color) {
     IState = effIdle;
     Color_t rgb = Color.ToRGB();
     for(uint32_t i=0; i<LED_CNT; i++) LedWs.ICurrentClr[i] = rgb;

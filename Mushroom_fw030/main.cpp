@@ -49,11 +49,11 @@ int main(void) {
     Clk.PrintFreqs();
 
     // Power pin
-//    PwrPin.Init();
-//    PwrPin.SetHi();
+    PwrPin.Init();
+    PwrPin.SetHi();
 
-//    Effects.Init();
-//    Effects.AllTogetherSmoothly(clRed, 360);
+    Effects.Init();
+    Effects.AllTogetherSmoothly(clRed, 360);
 
     SimpleSensors::Init();
     // Adc
