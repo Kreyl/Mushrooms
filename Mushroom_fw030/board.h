@@ -30,8 +30,10 @@
 #if 1 // ========================== GPIO =======================================
 // PortMinTim_t: GPIO, Pin, Tim, TimChnl, invInverted, omPushPull, TopValue
 
-// Button
-#define BTN_PIN         GPIOA, 0, pudPullDown
+// Buttons
+#define BTN1_PIN        GPIOA, 0, pudPullDown
+#define BTN2_PIN        GPIOA, 8, pudPullDown
+#define BTN3_PIN        GPIOA, 1, pudPullDown
 
 // Peripheral power enable
 #define PWR_EN_PIN      GPIOB, 14, omPushPull

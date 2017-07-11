@@ -55,7 +55,7 @@ int main(void) {
 //    Effects.Init();
 //    Effects.AllTogetherSmoothly(clRed, 360);
 
-//    SimpleSensors::Init();
+    SimpleSensors::Init();
     // Adc
 //    PinSetupAnalog(BAT_MEAS_PIN);
 //    Adc.Init();
@@ -74,6 +74,10 @@ void ITask() {
             case evtIdShellCmd:
                 OnCmd((Shell_t*)Msg.Ptr);
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
+                break;
+
+            case evtIdButtons:
+                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
                 break;
 
             default: break;
