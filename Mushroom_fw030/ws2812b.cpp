@@ -15,13 +15,13 @@
                         | STM32_DMA_CR_TCIE     /* Enable Transmission Complete IRQ */
 
 // Tx timings: bit cnt
-#define SEQ_1               0b11111000  // 0xF8
-#define SEQ_0               0b11000000  // 0xC0
+#define SEQ_1               0b1110  // 0xE
+#define SEQ_0               0b1000  // 0x8
 
-#define SEQ_00              0xC0C0
-#define SEQ_01              0xC0F8
-#define SEQ_10              0xF8C0
-#define SEQ_11              0xF8F8
+#define SEQ_00              0x88
+#define SEQ_01              0x8E
+#define SEQ_10              0xE8
+#define SEQ_11              0xEE
 
 
 LedWs_t LedWs;
@@ -52,30 +52,31 @@ void LedWs_t::Init() {
 }
 
 void LedWs_t::AppendBitsMadeOfByte(uint8_t Byte) {
-    uint8_t Bits;
+    uint8_t Bits, *p = (uint8_t*)PBuf;
     Bits = Byte & 0b11000000;
-    if     (Bits == 0b00000000) *PBuf++ = SEQ_00;
-    else if(Bits == 0b01000000) *PBuf++ = SEQ_01;
-    else if(Bits == 0b10000000) *PBuf++ = SEQ_10;
-    else if(Bits == 0b11000000) *PBuf++ = SEQ_11;
+    if     (Bits == 0b00000000) *p++ = SEQ_00;
+    else if(Bits == 0b01000000) *p++ = SEQ_01;
+    else if(Bits == 0b10000000) *p++ = SEQ_10;
+    else if(Bits == 0b11000000) *p++ = SEQ_11;
 
     Bits = Byte & 0b00110000;
-    if     (Bits == 0b00000000) *PBuf++ = SEQ_00;
-    else if(Bits == 0b00010000) *PBuf++ = SEQ_01;
-    else if(Bits == 0b00100000) *PBuf++ = SEQ_10;
-    else if(Bits == 0b00110000) *PBuf++ = SEQ_11;
+    if     (Bits == 0b00000000) *p++ = SEQ_00;
+    else if(Bits == 0b00010000) *p++ = SEQ_01;
+    else if(Bits == 0b00100000) *p++ = SEQ_10;
+    else if(Bits == 0b00110000) *p++ = SEQ_11;
 
     Bits = Byte & 0b00001100;
-    if     (Bits == 0b00000000) *PBuf++ = SEQ_00;
-    else if(Bits == 0b00000100) *PBuf++ = SEQ_01;
-    else if(Bits == 0b00001000) *PBuf++ = SEQ_10;
-    else if(Bits == 0b00001100) *PBuf++ = SEQ_11;
+    if     (Bits == 0b00000000) *p++ = SEQ_00;
+    else if(Bits == 0b00000100) *p++ = SEQ_01;
+    else if(Bits == 0b00001000) *p++ = SEQ_10;
+    else if(Bits == 0b00001100) *p++ = SEQ_11;
 
     Bits = Byte & 0b00000011;
-    if     (Bits == 0b00000000) *PBuf++ = SEQ_00;
-    else if(Bits == 0b00000001) *PBuf++ = SEQ_01;
-    else if(Bits == 0b00000010) *PBuf++ = SEQ_10;
-    else if(Bits == 0b00000011) *PBuf++ = SEQ_11;
+    if     (Bits == 0b00000000) *p++ = SEQ_00;
+    else if(Bits == 0b00000001) *p++ = SEQ_01;
+    else if(Bits == 0b00000010) *p++ = SEQ_10;
+    else if(Bits == 0b00000011) *p++ = SEQ_11;
+    PBuf += 2;
 }
 
 void LedWs_t::ISetCurrentColors() {

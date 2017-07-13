@@ -23,7 +23,7 @@
 
 #define LED_CNT             3   // Number of WS2812 LEDs
 
-#define SEQ_LEN             8
+#define SEQ_LEN             4
 #define RST_W_CNT           30 // zero words before and after data to produce reset
 
 // SPI16 Buffer (no tuning required)

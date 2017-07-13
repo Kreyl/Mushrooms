@@ -24,7 +24,7 @@ void ITask();
 
 ColorHSV_t hsv(319, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
-TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
+//TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
 //Profile_t Profile;
 
 //bool AdcFirstConv = true;
@@ -77,17 +77,16 @@ void ITask() {
                 break;
 
             case evtIdButtons:
-            case evtIdEverySecond:
 //                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-//                if(Msg.BtnEvtInfo.BtnID == 1) {
-//                    if(hsv.H < 360) hsv.H++;
-//                    else hsv.H = 0;
-//                }
-//                else if(Msg.BtnEvtInfo.BtnID == 2) {
-//                    if(hsv.H > 0) hsv.H--;
-//                    else hsv.H = 360;
-//                }
-//                Printf("HSV %u\r", hsv.H);
+                if(Msg.BtnEvtInfo.BtnID == 1) {
+                    if(hsv.H < 360) hsv.H++;
+                    else hsv.H = 0;
+                }
+                else if(Msg.BtnEvtInfo.BtnID == 2) {
+                    if(hsv.H > 0) hsv.H--;
+                    else hsv.H = 360;
+                }
+                Printf("HSV %u\r", hsv.H);
                 Effects.AllTogetherNow(hsv);
                 break;
 
