@@ -24,7 +24,7 @@ void ITask();
 
 ColorHSV_t hsv(319, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
-//TmrKL_t TmrAdc {MS2ST(1530), EVT_SAMPLING, tktPeriodic};
+TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
 //Profile_t Profile;
 
 //bool AdcFirstConv = true;
@@ -34,6 +34,7 @@ PinOutput_t PwrPin { PWR_EN_PIN };
 
 int main(void) {
     // ==== Init Clock system ====
+//    Clk.SetupFlashLatency(16);
 //    Clk.SetupPLLDividers(1, pllMul4, plsHSIdiv2);
 //    Clk.SwitchTo(csPLL);
     Clk.UpdateFreqValues();
@@ -76,16 +77,17 @@ void ITask() {
                 break;
 
             case evtIdButtons:
+            case evtIdEverySecond:
 //                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-                if(Msg.BtnEvtInfo.BtnID == 1) {
-                    if(hsv.H < 360) hsv.H++;
-                    else hsv.H = 0;
-                }
-                else if(Msg.BtnEvtInfo.BtnID == 2) {
-                    if(hsv.H > 0) hsv.H--;
-                    else hsv.H = 360;
-                }
-                Printf("HSV %u\r", hsv.H);
+//                if(Msg.BtnEvtInfo.BtnID == 1) {
+//                    if(hsv.H < 360) hsv.H++;
+//                    else hsv.H = 0;
+//                }
+//                else if(Msg.BtnEvtInfo.BtnID == 2) {
+//                    if(hsv.H > 0) hsv.H--;
+//                    else hsv.H = 360;
+//                }
+//                Printf("HSV %u\r", hsv.H);
                 Effects.AllTogetherNow(hsv);
                 break;
 
@@ -138,13 +140,6 @@ void ITask() {
             } // if not big diff
         } // evt
 #endif
-
-//#if UART_RX_ENABLED
-//        if(Evt & EVT_UART_NEW_CMD) {
-//            OnCmd((Shell_t*)&Uart);
-//            Uart.SignalCmdProcessed();
-//        }
-//#endif
     } // while true
 } // App_t::ITask()
 

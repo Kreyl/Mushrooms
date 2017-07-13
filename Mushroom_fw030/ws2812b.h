@@ -24,7 +24,7 @@
 #define LED_CNT             3   // Number of WS2812 LEDs
 
 #define SEQ_LEN             8
-#define RST_W_CNT           30 // zero words before data to produce reset
+#define RST_W_CNT           30 // zero words before and after data to produce reset
 
 // SPI16 Buffer (no tuning required)
 #define DATA_BIT_CNT        (LED_CNT * 3 * 8 * SEQ_LEN)   // Each led has 3 channels 8 bit each
@@ -39,6 +39,12 @@ private:
     void AppendBitsMadeOfByte(uint8_t Byte);
 public:
     void Init();
+    bool AreOff() {
+        for(uint8_t i=0; i<LED_CNT; i++) {
+            if(ICurrentClr[i] != clBlack) return false;
+        }
+        return true;
+    }
     // Inner use
     Color_t ICurrentClr[LED_CNT];
     void ISetCurrentColors();
