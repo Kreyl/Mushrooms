@@ -5,6 +5,7 @@
  *      Author: g.kruglov
  */
 
+#include <sk6812.h>
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
@@ -13,7 +14,6 @@
 #include "buttons.h"
 #include "board.h"
 //#include "kl_adc.h"
-#include "ws2812b.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever

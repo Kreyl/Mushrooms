@@ -5,7 +5,7 @@
  *      Author: Kreyl
  */
 
-#include "ws2812b.h"
+#include <sk6812.h>
 
 #define LED_DMA_MODE    DMA_PRIORITY_HIGH \
                         | STM32_DMA_CR_MSIZE_HWORD \
