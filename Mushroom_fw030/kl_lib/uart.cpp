@@ -274,7 +274,7 @@ void BaseUart_t::OnClkChange() {
 
 #if 1 // ========================= Cmd UART ====================================
 #if UART_RX_ENABLED // ==== RX ====
-static THD_WORKING_AREA(waUartRxThread, 128);
+static THD_WORKING_AREA(waUartRxThread, 64);
 __noreturn
 static void UartRxThread(void *arg) {
     chRegSetThreadName("UartRx");

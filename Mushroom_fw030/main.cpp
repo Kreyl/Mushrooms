@@ -5,7 +5,7 @@
  *      Author: g.kruglov
  */
 
-#include <sk6812.h>
+#include "sk6812.h"
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
@@ -22,7 +22,7 @@ extern CmdUart_t Uart;
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-ColorHSV_t hsv(319, 100, 100);
+Color_t Clr(0, 255, 0, 0);
 PinOutput_t PwrPin { PWR_EN_PIN };
 //TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
 //Profile_t Profile;
@@ -49,12 +49,13 @@ int main(void) {
     Printf("\r%S %S\r", APP_NAME, BUILD_TIME);
     Clk.PrintFreqs();
 
+    Printf("Leds: %u; Effs: %u\r", sizeof(Leds), sizeof(Effects));
     // Power pin
     PwrPin.Init();
     PwrPin.SetHi();
 
     Effects.Init();
-    Effects.AllTogetherNow(hsv);
+    Effects.AllTogetherNow(Clr);
 
     SimpleSensors::Init();
     // Adc
@@ -76,23 +77,23 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdButtons:
-//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-                if(Msg.BtnEvtInfo.BtnID == 1) {
-                    if(hsv.H < 360) hsv.H++;
-                    else hsv.H = 0;
-                }
-                else if(Msg.BtnEvtInfo.BtnID == 2) {
-                    if(hsv.H > 0) hsv.H--;
-                    else hsv.H = 360;
-                }
+//            case evtIdButtons:
+////                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+//                if(Msg.BtnEvtInfo.BtnID == 1) {
+//                    if(hsv.H < 360) hsv.H++;
+//                    else hsv.H = 0;
+//                }
+//                else if(Msg.BtnEvtInfo.BtnID == 2) {
+//                    if(hsv.H > 0) hsv.H--;
+//                    else hsv.H = 360;
+//                }
 //                Printf("HSV %u; ", hsv.H);
 //                {
 //                    Color_t rgb = hsv.ToRGB();
 //                    rgb.Print();
 //                }
-                Effects.AllTogetherNow(hsv);
-                break;
+//                Effects.AllTogetherNow(hsv);
+//                break;
 
             default: break;
         } // switch
@@ -162,16 +163,15 @@ void OnCmd(Shell_t *PShell) {
         PShell->Ack(retvOk);
     }
 
-//    else if(PCmd->NameIs("HSL")) {
-//        ColorHSL_t ClrHsl(0,0,0);
-//        if(PCmd->GetNextUint16(&ClrHsl.H) != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsl.S)   != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsl.L)   != OK) return;
-//        Color_t Clr;
-//        ClrHsl.ToRGB(Clr);
-////        Led.SetColor(Clr, 100);
-//        PShell->Ack(OK);
-//    }
+    else if(PCmd->NameIs("RGBW")) {
+        Color_t Clr(0,0,0,0);
+        if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
+        if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
+        if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
+        if(PCmd->GetNext<uint8_t>(&Clr.W) != retvOk) return;
+        Effects.AllTogetherNow(Clr);
+        PShell->Ack(retvOk);
+    }
 
 //    else if(PCmd->NameIs("HSV")) {
 //        ColorHSV_t ClrHsv(0,0,0);

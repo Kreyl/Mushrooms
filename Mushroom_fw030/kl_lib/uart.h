@@ -34,8 +34,8 @@ struct UartParams_t {
 #define UART_RX_ENABLED     TRUE
 
 #if UART_RX_ENABLED // ==== RX ====
-#define UART_RXBUF_SZ       99 // unprocessed bytes
-#define UART_CMD_BUF_SZ     54 // payload bytes
+#define UART_RXBUF_SZ       54 // unprocessed bytes
+#define UART_CMD_BUF_SZ     24 // payload bytes
 #define UART_RX_POLLING_MS  99
 #endif
 

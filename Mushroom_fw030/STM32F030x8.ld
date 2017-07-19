@@ -15,8 +15,8 @@
 */
 
  /* Put it here instead of Makefile */
-__main_stack_size__     = 0x0400; 
-__process_stack_size__  = 0x0400;
+__main_stack_size__     = 0x0100; 
+__process_stack_size__  = 0x0100;
 
 /*
  * STM32F030x8 memory setup.
