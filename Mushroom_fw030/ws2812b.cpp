@@ -52,31 +52,34 @@ void LedWs_t::Init() {
 }
 
 void LedWs_t::AppendBitsMadeOfByte(uint8_t Byte) {
-    uint8_t Bits, *p = (uint8_t*)PBuf;
+    uint8_t Bits, bMsb = 0, bLsb = 0;
     Bits = Byte & 0b11000000;
-    if     (Bits == 0b00000000) *p++ = SEQ_00;
-    else if(Bits == 0b01000000) *p++ = SEQ_01;
-    else if(Bits == 0b10000000) *p++ = SEQ_10;
-    else if(Bits == 0b11000000) *p++ = SEQ_11;
+    if     (Bits == 0b00000000) bMsb = SEQ_00;
+    else if(Bits == 0b01000000) bMsb = SEQ_01;
+    else if(Bits == 0b10000000) bMsb = SEQ_10;
+    else if(Bits == 0b11000000) bMsb = SEQ_11;
 
     Bits = Byte & 0b00110000;
-    if     (Bits == 0b00000000) *p++ = SEQ_00;
-    else if(Bits == 0b00010000) *p++ = SEQ_01;
-    else if(Bits == 0b00100000) *p++ = SEQ_10;
-    else if(Bits == 0b00110000) *p++ = SEQ_11;
+    if     (Bits == 0b00000000) bLsb = SEQ_00;
+    else if(Bits == 0b00010000) bLsb = SEQ_01;
+    else if(Bits == 0b00100000) bLsb = SEQ_10;
+    else if(Bits == 0b00110000) bLsb = SEQ_11;
+
+    *PBuf++ = (bMsb << 8) | bLsb;
 
     Bits = Byte & 0b00001100;
-    if     (Bits == 0b00000000) *p++ = SEQ_00;
-    else if(Bits == 0b00000100) *p++ = SEQ_01;
-    else if(Bits == 0b00001000) *p++ = SEQ_10;
-    else if(Bits == 0b00001100) *p++ = SEQ_11;
+    if     (Bits == 0b00000000) bMsb = SEQ_00;
+    else if(Bits == 0b00000100) bMsb = SEQ_01;
+    else if(Bits == 0b00001000) bMsb = SEQ_10;
+    else if(Bits == 0b00001100) bMsb = SEQ_11;
 
     Bits = Byte & 0b00000011;
-    if     (Bits == 0b00000000) *p++ = SEQ_00;
-    else if(Bits == 0b00000001) *p++ = SEQ_01;
-    else if(Bits == 0b00000010) *p++ = SEQ_10;
-    else if(Bits == 0b00000011) *p++ = SEQ_11;
-    PBuf += 2;
+    if     (Bits == 0b00000000) bLsb = SEQ_00;
+    else if(Bits == 0b00000001) bLsb = SEQ_01;
+    else if(Bits == 0b00000010) bLsb = SEQ_10;
+    else if(Bits == 0b00000011) bLsb = SEQ_11;
+
+    *PBuf++ = (bMsb << 8) | bLsb;
 }
 
 void LedWs_t::ISetCurrentColors() {

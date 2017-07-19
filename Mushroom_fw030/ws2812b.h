@@ -21,10 +21,12 @@
 #include "color.h"
 #include "uart.h"
 
+// This code works with following frequencies: 8MHz APB => 4MHz SPI
+
 #define LED_CNT             3   // Number of WS2812 LEDs
 
 #define SEQ_LEN             4
-#define RST_W_CNT           30 // zero words before and after data to produce reset
+#define RST_W_CNT           4 // zero words before and after data to produce reset
 
 // SPI16 Buffer (no tuning required)
 #define DATA_BIT_CNT        (LED_CNT * 3 * 8 * SEQ_LEN)   // Each led has 3 channels 8 bit each

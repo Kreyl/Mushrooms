@@ -86,7 +86,11 @@ void ITask() {
                     if(hsv.H > 0) hsv.H--;
                     else hsv.H = 360;
                 }
-                Printf("HSV %u\r", hsv.H);
+//                Printf("HSV %u; ", hsv.H);
+//                {
+//                    Color_t rgb = hsv.ToRGB();
+//                    rgb.Print();
+//                }
                 Effects.AllTogetherNow(hsv);
                 break;
 
