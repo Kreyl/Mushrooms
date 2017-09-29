@@ -11,9 +11,11 @@ enum EvtMsgId_t {
     evtIdNone = 0, // Always
 
     // Pretending to eternity
-    evtIdShellCmd = 1,
-    evtIdEverySecond = 2,
+    evtIdShellCmd,
+    evtIdEverySecond,
 
-    evtIdByteCmd = 11,
-    evtIdButtons = 15,
+    evtIdByteCmd,
+    evtIdButtons,
+
+    evtIdColorChange,
 };

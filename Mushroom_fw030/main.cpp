@@ -22,9 +22,9 @@ extern CmdUart_t Uart;
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-ColorHSV_t hsv(319, 100, 100);
+ColorHSV_t hsv(0, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
-//TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
+TmrKL_t TmrColorChange {MS2ST(11), evtIdColorChange, tktPeriodic};
 //Profile_t Profile;
 
 //bool AdcFirstConv = true;
@@ -56,12 +56,14 @@ int main(void) {
     Effects.Init();
     Effects.AllTogetherNow(hsv);
 
-    SimpleSensors::Init();
+//    SimpleSensors::Init();
     // Adc
 //    PinSetupAnalog(BAT_MEAS_PIN);
 //    Adc.Init();
 //    Adc.EnableVRef();
 //    TmrAdc.InitAndStart();
+
+    TmrColorChange.StartOrRestart();
     // Main cycle
     ITask();
 }
@@ -74,6 +76,12 @@ void ITask() {
             case evtIdShellCmd:
                 OnCmd((Shell_t*)Msg.Ptr);
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
+                break;
+
+            case evtIdColorChange:
+                if(hsv.H < 360) hsv.H++;
+                else hsv.H = 0;
+                Effects.AllTogetherNow(hsv);
                 break;
 
             case evtIdButtons:
