@@ -14,6 +14,15 @@
 
 App_t App;
 
+VirtualTimer TmrOff;
+
+extern "C"
+void TmrOffCallback(void* p) {
+    chSysLockFromIsr();
+    chEvtSignalI(App.PThd, EVTMSK_Off);
+    chSysUnlockFromIsr();
+}
+
 #if 1 // ========================= Application =================================
 __attribute__((noreturn))
 void App_t::ITask() {
@@ -27,7 +36,14 @@ void App_t::ITask() {
 //        chThdSleepMilliseconds(7002);
 
         uint32_t EvtMsk = chEvtWaitAny(ALL_EVENTS);
-        if(EvtMsk & EVTMSK_RX) LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
+        if(EvtMsk & EVTMSK_RX) {
+            LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
+            chSysLock();
+            if(chVTIsArmedI(&TmrOff)) chVTResetI(&TmrOff);
+            chVTSetI(&TmrOff, MS2ST(9), TmrOffCallback, nullptr);
+            chSysUnlock();
+        }
+
     } // while 1
 }
 

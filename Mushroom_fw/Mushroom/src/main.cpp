@@ -28,11 +28,13 @@ int main(void) {
     Uart.Init(115200);
 
     LedWs.Init();
-    LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
+//    LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
     Radio.Init();
     App.PThd = chThdSelf();
     App.Init();
 
     Uart.Printf("\rMushroom  AHB=%u; APB1=%u; APB2=%u\r\n", Clk.AHBFreqHz, Clk.APB1FreqHz, Clk.APB2FreqHz);
+
+    App.SendEvtRx(0, 255, 0);
     while(true) App.ITask();
 }
