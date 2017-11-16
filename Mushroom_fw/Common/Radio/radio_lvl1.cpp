@@ -39,9 +39,9 @@ static void rLvl1Thread(void *arg) {
 
 void rLevel1_t::ITask() {
 #ifdef TX
-    PktTx.R = 0;
-    PktTx.G = 255;
-    PktTx.B = 0;
+//    PktTx.R = 0;
+//    PktTx.G = 255;
+//    PktTx.B = 255;
     DBG1_SET();
     CC.TransmitSync(&PktTx);
     DBG1_CLR();

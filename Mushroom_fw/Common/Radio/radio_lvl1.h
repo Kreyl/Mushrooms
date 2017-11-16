@@ -15,8 +15,8 @@
 
 class rLevel1_t {
 private:
-    rPkt_t PktRx, PktTx;
 public:
+    rPkt_t PktRx, PktTx;
     void Init();
     // Inner use
     void ITask();

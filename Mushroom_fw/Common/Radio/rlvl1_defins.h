@@ -18,7 +18,7 @@ struct rPkt_t {
 
 #define R_APP_ID            0x09
 #define RCHANNEL            4
-#define RSSI_MIN_DBM        (-63)
+#define RSSI_MIN_DBM        (-111)
 
 #if 1 // =========================== Timings ===================================
 #define RX_DURATION_MS      7

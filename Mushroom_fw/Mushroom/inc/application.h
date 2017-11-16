@@ -13,7 +13,7 @@
 #include "evt_mask.h"
 #include "color.h"
 
-#define APP_NAME_CRYSTAL
+#define TX
 
 // ==== LED ====
 #define LED_CNT         5

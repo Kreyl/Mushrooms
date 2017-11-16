@@ -19,7 +19,7 @@ VirtualTimer TmrOff;
 extern "C"
 void TmrOffCallback(void* p) {
     chSysLockFromIsr();
-    chEvtSignalI(App.PThd, EVTMSK_Off);
+    chEvtSignalI(App.PThd, EVTMSK_OFF);
     chSysUnlockFromIsr();
 }
 
@@ -40,8 +40,11 @@ void App_t::ITask() {
             LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
             chSysLock();
             if(chVTIsArmedI(&TmrOff)) chVTResetI(&TmrOff);
-            chVTSetI(&TmrOff, MS2ST(9), TmrOffCallback, nullptr);
+            chVTSetI(&TmrOff, MS2ST(9000), TmrOffCallback, nullptr);
             chSysUnlock();
+        }
+        if(EvtMsk & EVTMSK_OFF) {
+            LedWs.SetCommonColorSmoothly(clBlack, csmOneByOne);
         }
 
     } // while 1
