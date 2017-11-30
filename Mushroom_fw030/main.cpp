@@ -5,7 +5,6 @@
  *      Author: g.kruglov
  */
 
-#include "sk6812.h"
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
@@ -14,6 +13,7 @@
 #include "buttons.h"
 #include "board.h"
 //#include "kl_adc.h"
+#include "IntelLedEffs.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -49,13 +49,12 @@ int main(void) {
     Printf("\r%S %S\r", APP_NAME, BUILD_TIME);
     Clk.PrintFreqs();
 
-    Printf("Leds: %u; Effs: %u\r", sizeof(Leds), sizeof(Effects));
     // Power pin
     PwrPin.Init();
     PwrPin.SetHi();
 
-    Effects.Init();
-    Effects.AllTogetherNow(Clr);
+    LedEffectsInit();
+    EffAllTogetherNow.SetupAndStart(Clr);
 
     SimpleSensors::Init();
     // Adc
@@ -169,7 +168,7 @@ void OnCmd(Shell_t *PShell) {
         if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.W) != retvOk) return;
-        Effects.AllTogetherNow(Clr);
+        EffAllTogetherNow.SetupAndStart(Clr);
         PShell->Ack(retvOk);
     }
 

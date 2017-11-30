@@ -11,7 +11,7 @@
 
 // ==== General ====
 #define BOARD_NAME          "CrystalMushroom"
-#define APP_NAME            "Mushroom"
+#define APP_NAME            "Crystal"
 
 // MCU type as defined in the ST header.
 #define STM32F030x8
