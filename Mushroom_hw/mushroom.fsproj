@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--*****************************************-->
-<!--   File    : mushroom.fsproj             -->
-<!--   Format  : TopoR Project file          -->
-<!--   Version : 2                           -->
-<!--   Program : TopoR Lite 6.3.17875        -->
-<!--   Date    : Thursday, November 16, 2017 -->
-<!--   Time    : 21:54                       -->
-<!--*****************************************-->
+<!--****************************************-->
+<!--   File    : mushroom.fsproj            -->
+<!--   Format  : TopoR Project file         -->
+<!--   Version : 2                          -->
+<!--   Program : TopoR Lite 6.3.17875       -->
+<!--   Date    : Saturday, December 2, 2017 -->
+<!--   Time    : 12:11                      -->
+<!--****************************************-->
 
 <Project>
    <Version current="2"/>
    <GUID>{E308E833-392B-4199-855F-D4A85B1E1D1F}</GUID>
    <Documents>
       <Section name="PCB">
-         <File path=".\mushroom.fsx" isopened="1" dateChange="2017-11-16 20:32:22"/>
+         <File path=".\mushroom.fsx" isopened="1" dateChange="2017-12-02 11:45:33"/>
       </Section>
       <Section name="AutoRouting"/>
    </Documents>
+   <Import>
+      <Specctra>
+         <Path name="D:\Nute\Calmari\Mushrooms\Mushroom_hw\mushroom.dsn"/>
+      </Specctra>
+   </Import>
 </Project>
