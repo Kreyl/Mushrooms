@@ -45,11 +45,12 @@
 #define UART_GPIO       GPIOA
 #define UART_TX_PIN     9
 #define UART_RX_PIN     10
-#define UART_AF         AF1 // for USART1 @ GPIOA
 
 // LED
 #define LEDWS_PIN       GPIOB, 15, omPushPull, pudNone, AF0, psHigh
 
+// Radio: SPI, PGpio, Sck, Miso, Mosi, Cs, Gdo0
+#define CC_Setup0       SPI1, GPIOA, 5,6,7, 4, 3
 #endif // GPIO
 
 #if 1 // =========================== SPI =======================================

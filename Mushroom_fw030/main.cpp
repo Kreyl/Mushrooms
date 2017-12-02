@@ -14,6 +14,7 @@
 #include "board.h"
 //#include "kl_adc.h"
 #include "IntelLedEffs.h"
+#include "radio_lvl1.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -54,7 +55,11 @@ int main(void) {
     PwrPin.SetHi();
 
     LedEffectsInit();
-    EffAllTogetherNow.SetupAndStart(Clr);
+
+    if(Radio.Init() == retvOk) {
+        EffAllTogetherNow.SetupAndStart(Clr);
+    }
+    else EffAllTogetherNow.SetupAndStart(clRed);
 
     SimpleSensors::Init();
     // Adc
