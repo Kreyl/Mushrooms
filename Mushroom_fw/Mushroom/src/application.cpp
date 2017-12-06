@@ -11,6 +11,7 @@
 #include "radio_lvl1.h"
 #include "ch.h"
 #include "ws2812b.h"
+#include "buttons.h"
 
 App_t App;
 
@@ -18,17 +19,14 @@ App_t App;
 __attribute__((noreturn))
 void App_t::ITask() {
     chRegSetThreadName("App");
+    uint32_t Indx = 0;
     while(true) {
-//        LedWs.SetCommonColorSmoothly(clGreen, csmOneByOne);
-//        chThdSleepMilliseconds(18000);
-//        LedWs.SetCommonColorSmoothly(clBlue, csmSimultaneously);
-//        chThdSleepMilliseconds(7002);
-//        LedWs.SetCommonColorSmoothly(clBlack, csmSimultaneously);
-//        chThdSleepMilliseconds(7002);
-
-        uint32_t EvtMsk = chEvtWaitAny(ALL_EVENTS);
-        if(EvtMsk & EVTMSK_RX) LedWs.SetCommonColorSmoothly(IClr, csmOneByOne);
-    } // while 1
+        LedWs.SetCommonColorSmoothly(ColorTable[Indx], csmOneByOne);
+        chEvtWaitAny(ALL_EVENTS);
+        chThdSleepMilliseconds(4005);
+        Indx++;
+        if(Indx >= COLOR_TABLE_SZ) Indx = 0;
+    }
 }
 
 //void EnterLowPower()    { Clk.SetupBusDividers(ahbDiv8, apbDiv1, apbDiv1); }

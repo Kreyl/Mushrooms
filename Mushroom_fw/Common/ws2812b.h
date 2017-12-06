@@ -18,7 +18,7 @@
 
 // Smooth speed
 #ifndef LED_SMOOTH_CONST
-#define LED_SMOOTH_CONST    810
+#define LED_SMOOTH_CONST    360
 #endif
 
 #define LED_DMA_MODE    DMA_PRIORITY_VERYHIGH \
@@ -48,7 +48,6 @@ private:
     uint32_t ICalcDelayClr();
 public:
     Color_t DesiredClr[LED_CNT];
-    ftVoiVoid OnSmoothStart, OnSmoothEnd;
     void Init();
     void SetCommonColor(Color_t Clr);
     void SetCommonColorSmoothly(Color_t Clr, ClrSetupMode_t AMode = csmSimultaneously);
