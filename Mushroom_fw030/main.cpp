@@ -8,6 +8,7 @@
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
+//#include "ColorProfile.h"
 #include "SimpleSensors.h"
 #include "buttons.h"
 #include "board.h"
