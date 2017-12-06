@@ -23,7 +23,8 @@ extern CmdUart_t Uart;
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-Color_t Clr(0, 255, 0, 0);
+//Color_t Clr(0, 255, 0, 0);
+ColorHSV_t hsv(99, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
 //TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
 //Profile_t Profile;
@@ -56,10 +57,12 @@ int main(void) {
 
     LedEffectsInit();
 
-    if(Radio.Init() == retvOk) {
-        EffAllTogetherNow.SetupAndStart(Clr);
-    }
-    else EffAllTogetherNow.SetupAndStart(clRed);
+//    if(Radio.Init() == retvOk) {
+//        EffAllTogetherNow.SetupAndStart(Clr);
+//    }
+//    else EffAllTogetherNow.SetupAndStart(clRed);
+
+    EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
 
     SimpleSensors::Init();
     // Adc
@@ -81,23 +84,20 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-//            case evtIdButtons:
-////                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-//                if(Msg.BtnEvtInfo.BtnID == 1) {
-//                    if(hsv.H < 360) hsv.H++;
-//                    else hsv.H = 0;
-//                }
-//                else if(Msg.BtnEvtInfo.BtnID == 2) {
-//                    if(hsv.H > 0) hsv.H--;
-//                    else hsv.H = 360;
-//                }
-//                Printf("HSV %u; ", hsv.H);
-//                {
-//                    Color_t rgb = hsv.ToRGB();
-//                    rgb.Print();
-//                }
-//                Effects.AllTogetherNow(hsv);
-//                break;
+            case evtIdButtons:
+//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+                if(Msg.BtnEvtInfo.BtnID == 0) {
+                    if(hsv.H < 360) hsv.H++;
+                    else hsv.H = 0;
+                }
+                else if(Msg.BtnEvtInfo.BtnID == 1) {
+                    if(hsv.H > 0) hsv.H--;
+                    else hsv.H = 360;
+                }
+                Printf("HSV %u; ", hsv.H);
+                hsv.ToRGB().Print();
+                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+                break;
 
             default: break;
         } // switch
