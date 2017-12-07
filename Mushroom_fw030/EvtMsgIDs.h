@@ -14,6 +14,7 @@ enum EvtMsgId_t {
     evtIdShellCmd,
     evtIdEverySecond,
 
+    evtIdTimeToSave,
     evtIdRadioCmd,
     evtIdButtons,
 };

@@ -15,6 +15,7 @@
 //#include "kl_adc.h"
 #include "IntelLedEffs.h"
 #include "radio_lvl1.h"
+#include "SaveToFlash.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -26,6 +27,7 @@ void ITask();
 //Color_t Clr(0, 255, 0, 0);
 ColorHSV_t hsv(99, 100, 100);
 PinOutput_t PwrPin { PWR_EN_PIN };
+TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 //TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
 //Profile_t Profile;
 
@@ -62,6 +64,12 @@ int main(void) {
 //    }
 //    else EffAllTogetherNow.SetupAndStart(clRed);
 
+    // Load and check color
+    Flash::Load((uint32_t*)&hsv, sizeof(ColorHSV_t));
+    if(hsv.H > 360) hsv.H = 0;
+    hsv.S = 100;
+    hsv.V = 100;
+
     EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
 
     SimpleSensors::Init();
@@ -94,9 +102,15 @@ void ITask() {
                     if(hsv.H > 0) hsv.H--;
                     else hsv.H = 360;
                 }
-                Printf("HSV %u; ", hsv.H);
-                hsv.ToRGB().Print();
+//                Printf("HSV %u; ", hsv.H);
+//                hsv.ToRGB().Print();
                 EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+                // Prepare to save
+                TmrSave.StartOrRestart();
+                break;
+
+            case evtIdTimeToSave:
+                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
                 break;
 
             default: break;
@@ -128,11 +142,6 @@ void ITask() {
 //            Uart.Printf("Battery low\r");
 //            State = stateDischarged;
 //            Led.IndicateDischarged();
-//        }
-
-        // Led sequence end: switch off if time to sleep
-//        if(Evt & EVT_LED_DONE) {
-//            Uart.Printf("Led Done\r");
 //        }
 
 #if ADC_REQUIRED

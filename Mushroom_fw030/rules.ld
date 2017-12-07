@@ -360,9 +360,14 @@ SECTIONS
     /***************************************
      *  Here is place to read and write to *
      ***************************************/
-    MyFlash 0x08006400 :
+    MyFlash1 0x08007400 :
     {
         *(MyFlash)
+    } > flash
+
+    MyFlash2 0x08007800 :
+    {
+        *(MyFlash2)
     } > flash
 
 }
