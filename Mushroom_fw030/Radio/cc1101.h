@@ -21,7 +21,6 @@ private:
     const uint16_t Sck, Miso, Mosi, Cs;
     const PinIrq_t IGdo0;
     uint8_t IState; // Inner CC state, returned as first byte
-    uint8_t IPktSz;
     thread_reference_t ThdRef;
     // Pins
     uint8_t BusyWait() {
@@ -44,17 +43,18 @@ private:
     uint8_t Reset()       { return WriteStrobe(CC_SRES); }
     uint8_t EnterTX()     { return WriteStrobe(CC_STX);  }
     uint8_t EnterRX()     { return WriteStrobe(CC_SRX);  }
+    uint8_t EnterIdle()    { return WriteStrobe(CC_SIDLE); }
+    uint8_t EnterPwrDown() { return WriteStrobe(CC_SPWD);  }
     uint8_t FlushRxFIFO() { return WriteStrobe(CC_SFRX); }
 public:
     uint8_t Init();
     void SetChannel(uint8_t AChannel);
     void SetTxPower(uint8_t APwr)  { WriteRegister(CC_PATABLE, APwr); }
-    void SetPktSize(uint8_t ASize) { WriteRegister(CC_PKTLEN, ASize); IPktSz = ASize; }
+    void SetPktSize(uint8_t ASize) { WriteRegister(CC_PKTLEN, ASize); }
     // State change
-    void Transmit(void *Ptr);
-    uint8_t Receive(uint32_t Timeout_ms, void *Ptr, int8_t *PRssi=nullptr);
-    uint8_t EnterIdle()    { return WriteStrobe(CC_SIDLE); }
-    uint8_t EnterPwrDown() { return WriteStrobe(CC_SPWD);  }
+    void Transmit(void *Ptr, uint8_t Len);
+    uint8_t Receive(uint32_t Timeout_ms, void *Ptr, uint8_t Len,  int8_t *PRssi=nullptr);
+    void PowerOff();
     uint8_t Recalibrate() {
         while(IState != CC_STB_IDLE) {
             if(EnterIdle() != retvOk) return retvFail;
@@ -62,7 +62,7 @@ public:
         if(WriteStrobe(CC_SCAL) != retvOk) return retvFail;
         return BusyWait();
     }
-    uint8_t ReadFIFO(void *Ptr, int8_t *PRssi);
+    uint8_t ReadFIFO(void *Ptr, int8_t *PRssi, uint8_t Len);
 
     void IIrqHandler() { chThdResumeI(&ThdRef, MSG_OK); }   // NotNull check perfprmed inside chThdResumeI
     cc1101_t(
@@ -71,5 +71,5 @@ public:
         ISpi(ASpi), PGpio(APGpio),
         Sck(ASck), Miso(AMiso), Mosi(AMosi), Cs(ACs),
         IGdo0(APGpio, AGdo0, pudNone, this),
-        IState(0), IPktSz(0), ThdRef(nullptr) {}
+        IState(0), ThdRef(nullptr) {}
 };

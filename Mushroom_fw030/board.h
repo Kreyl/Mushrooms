@@ -10,8 +10,8 @@
 #include <inttypes.h>
 
 // ==== General ====
-#define BOARD_NAME          "CrystalMushroom"
-#define APP_NAME            "Crystal"
+#define BOARD_NAME          "CrystalMushroom4"
+#define APP_NAME            "CrystalRadio"
 
 // MCU type as defined in the ST header.
 #define STM32F030x8

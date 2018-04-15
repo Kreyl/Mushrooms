@@ -38,9 +38,6 @@ TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 
 int main(void) {
     // ==== Init Clock system ====
-//    Clk.SetupFlashLatency(16);
-//    Clk.SetupPLLDividers(1, pllMul4, plsHSIdiv2);
-//    Clk.SwitchTo(csPLL);
     Clk.UpdateFreqValues();
 
     // === Init OS ===
@@ -55,24 +52,24 @@ int main(void) {
 
     // Power pin
     PwrPin.Init();
-    PwrPin.SetHi();
+    PwrPin.SetHi(); // PwrOff
 
     LedEffectsInit();
 
-//    if(Radio.Init() == retvOk) {
-//        EffAllTogetherNow.SetupAndStart(Clr);
-//    }
-//    else EffAllTogetherNow.SetupAndStart(clRed);
+    if(Radio.Init() == retvOk) {
+        EffAllTogetherNow.SetupAndStart(clGreen);
+    }
+    else EffAllTogetherNow.SetupAndStart(clRed);
 
     // Load and check color
-    Flash::Load((uint32_t*)&hsv, sizeof(ColorHSV_t));
-    if(hsv.H > 360) hsv.H = 0;
-    hsv.S = 100;
-    hsv.V = 100;
+//    Flash::Load((uint32_t*)&hsv, sizeof(ColorHSV_t));
+//    if(hsv.H > 360) hsv.H = 0;
+//    hsv.S = 100;
+//    hsv.V = 100;
 
-    EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+//    EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
 
-    SimpleSensors::Init();
+//    SimpleSensors::Init();
     // Adc
 //    PinSetupAnalog(BAT_MEAS_PIN);
 //    Adc.Init();
@@ -113,6 +110,13 @@ void ITask() {
                 Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
                 break;
 
+            case evtIdRadioCmd: {
+                Color_t Clr;
+                Clr.DWord32 = Msg.Value;
+                EffAllTogetherNow.SetupAndStart(Clr);
+            }
+            break;
+
             default: break;
         } // switch
 
@@ -129,20 +133,6 @@ void ITask() {
 //        chThdSleepMilliseconds(2700);
 //        Effects.AllTogetherSmoothly(clBlue, 360);
 //        chThdSleepMilliseconds(2700);
-
-//        __unused eventmask_t Evt = chEvtWaitAny(ALL_EVENTS);
-
-//        if(Evt & EVT_BUTTONS) {
-//            BtnEvtInfo_t EInfo;
-//            while(BtnGetEvt(&EInfo) == OK) BtnHandler(EInfo.Type);
-//        }
-
-//        // If battery discharged, indicate it
-//        if(Evt & EVT_BATTERY_LOW) {
-//            Uart.Printf("Battery low\r");
-//            State = stateDischarged;
-//            Led.IndicateDischarged();
-//        }
 
 #if ADC_REQUIRED
         if(Evt & EVT_SAMPLING) Adc.StartMeasurement();

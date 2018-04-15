@@ -11,6 +11,7 @@
 #include "ch.h"
 #include "cc1101.h"
 #include "kl_buf.h"
+#include "color.h"
 
 #if 0 // ========================= Signal levels ===============================
 // Python translation for db
@@ -56,9 +57,14 @@ static inline void Lvl250ToLvl1000(uint16_t *PLvl) {
 #define CC_TX_PWR   CC_Pwr0dBm
 
 #if 1 // =========================== Pkt_t =====================================
-struct rPkt_t  {
-    uint8_t Btn;
-    uint32_t TestWord;
+union rPkt_t  {
+    uint32_t DWord;
+    Color_t Clr{0,0,0};
+    rPkt_t& operator = (const rPkt_t &Right) {
+        DWord = Right.DWord;
+        return *this;
+    }
+//    void Print() { Printf("%d %d %d %d %d %d; %X\r", Ch[0],Ch[1],Ch[2],Ch[3],R1, R2, Btns); }
 } __packed;
 
 #define RPKT_LEN    sizeof(rPkt_t)

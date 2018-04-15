@@ -12,7 +12,7 @@ IntelLeds_t Leds;
 #if 1 // ========================== Common Effects =============================
 EffAllTogetherNow_t EffAllTogetherNow;
 EffAllTogetherSmoothly_t EffAllTogetherSmoothly;
-//EffFadeOneByOne_t EffFadeOneByOne(180, clRGBWStars, clRGBWBlack);
+EffFadeOneByOne_t EffFadeOneByOne(180, clGreen, clBlack);
 EffAllTogetherSequence_t EffAllTogetherSequence;
 
 static EffBase_t *PCurrentEff = nullptr;
