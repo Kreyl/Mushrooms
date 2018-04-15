@@ -1,6 +1,6 @@
-update=07.02.2017 18:40:35
+update=02.02.2018 23:31:06
 version=1
-last_client=eeschema
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
@@ -38,16 +38,4 @@ LibName6=Special
 LibName7=Antennas_kl
 [eeschema]
 version=1
-LibDir=D:/libs/Kicad
-[eeschema/libraries]
-LibName1=Antennas_kl
-LibName2=Connectors_kl
-LibName3=pcb_details
-LibName4=power
-LibName5=Power_kl
-LibName6=st_kl
-LibName7=Tittar_kl
-LibName8=Transistors_kl
-LibName9=RF ICs
-LibName10=memory
-LibName11=standard_logic
+LibDir=

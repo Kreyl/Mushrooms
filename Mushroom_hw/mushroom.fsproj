@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--***************************************-->
-<!--   File    : mushroom.fsproj           -->
-<!--   Format  : TopoR Project file        -->
-<!--   Version : 2                         -->
-<!--   Program : TopoR Lite 6.3.18019      -->
-<!--   Date    : Friday, December 29, 2017 -->
-<!--   Time    : 14:10                     -->
-<!--***************************************-->
+<!--**************************************-->
+<!--   File    : mushroom.fsproj          -->
+<!--   Format  : TopoR Project file       -->
+<!--   Version : 2                        -->
+<!--   Program : TopoR Lite 6.3.18019     -->
+<!--   Date    : Sunday, January 21, 2018 -->
+<!--   Time    : 11:36                    -->
+<!--**************************************-->
 
 <Project>
    <Version current="2"/>
    <GUID>{E308E833-392B-4199-855F-D4A85B1E1D1F}</GUID>
    <Documents>
       <Section name="PCB">
-         <File path=".\mushroom.fsx" isopened="1" dateChange="2017-12-06 23:33:44"/>
+         <File path=".\mushroom.fsx" isopened="0" dateChange="2017-12-06 23:33:44"/>
       </Section>
       <Section name="AutoRouting"/>
    </Documents>
