@@ -57,7 +57,7 @@ int main(void) {
     LedEffectsInit();
 
     if(Radio.Init() == retvOk) {
-        EffAllTogetherNow.SetupAndStart(clGreen);
+        EffOneByOne.SetupAndStart(clGreen, 360);
     }
     else EffAllTogetherNow.SetupAndStart(clRed);
 
@@ -69,7 +69,7 @@ int main(void) {
 
 //    EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
 
-//    SimpleSensors::Init();
+    SimpleSensors::Init();
     // Adc
 //    PinSetupAnalog(BAT_MEAS_PIN);
 //    Adc.Init();
@@ -113,7 +113,7 @@ void ITask() {
             case evtIdRadioCmd: {
                 Color_t Clr;
                 Clr.DWord32 = Msg.Value;
-                EffAllTogetherNow.SetupAndStart(Clr);
+                EffOneByOne.SetupAndStart(Clr, 360);
             }
             break;
 

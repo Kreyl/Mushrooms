@@ -12,6 +12,7 @@ IntelLeds_t Leds;
 #if 1 // ========================== Common Effects =============================
 EffAllTogetherNow_t EffAllTogetherNow;
 EffAllTogetherSmoothly_t EffAllTogetherSmoothly;
+EffOneByOne_t EffOneByOne;
 EffFadeOneByOne_t EffFadeOneByOne(180, clGreen, clBlack);
 EffAllTogetherSequence_t EffAllTogetherSequence;
 
@@ -79,6 +80,30 @@ EffState_t EffAllTogetherSmoothly_t::Process() {
         chThdSleepMilliseconds(Delay);
         return effInProgress;
     }
+}
+
+void EffOneByOne_t::SetupAndStart(Color_t ATargetClr, uint32_t ASmoothValue) {
+    if(ASmoothValue == 0) EffAllTogetherNow.SetupAndStart(ATargetClr);
+    else {
+        chSysLock();
+        ISmoothValue = ASmoothValue;
+        CurrentIndx = 0;
+        for(int32_t i=0; i<LED_CNT; i++) DesiredClr[i] = ATargetClr;
+        PCurrentEff = this;
+        chThdResumeS(&PThd, MSG_OK);
+        chSysUnlock();
+    }
+}
+EffState_t EffOneByOne_t::Process() {
+    uint32_t Delay = ICalcDelayN(CurrentIndx, ISmoothValue);
+    Leds.ICurrentClr[CurrentIndx].Adjust(DesiredClr[CurrentIndx]);
+    Leds.ISetCurrentColors();
+    if(Delay == 0) {
+        CurrentIndx++;
+        if(CurrentIndx >= LED_CNT) return effEnd;  // Setup completed
+    }
+    else chThdSleepMilliseconds(Delay);
+    return effInProgress;
 }
 
 // ======================== EffAllTogetherSequence_t ===========================

@@ -90,6 +90,15 @@ private:
     }
 };
 
+class EffOneByOne_t : public EffBase_t {
+protected:
+    uint32_t ISmoothValue;
+    uint32_t CurrentIndx;
+public:
+    void SetupAndStart(Color_t ATargetClr, uint32_t ASmoothValue);
+    EffState_t Process();
+};
+
 class EffFadeOneByOne_t : public EffAllTogetherSmoothly_t {
 private:
     uint8_t IDs[LED_CNT];
@@ -103,6 +112,7 @@ public:
 
 extern EffAllTogetherNow_t EffAllTogetherNow;
 extern EffAllTogetherSmoothly_t EffAllTogetherSmoothly;
+extern EffOneByOne_t EffOneByOne;
 extern EffFadeOneByOne_t EffFadeOneByOne;
 extern EffAllTogetherSequence_t EffAllTogetherSequence;
 
