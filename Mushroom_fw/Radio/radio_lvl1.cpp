@@ -50,7 +50,7 @@ void rLevel1_t::ITask() {
             EvtMsg_t Msg(evtIdRadioCmd, (int32_t)Pkt.DWord);
             EvtQMain.SendNowOrExit(Msg);
         } // if RxRslt ok
-        chThdSleepMilliseconds(72);
+        chThdSleepMilliseconds(720);
     } // while
 }
 #endif // task
