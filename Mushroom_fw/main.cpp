@@ -24,13 +24,14 @@ CmdUart_t Uart{&CmdUartParams};
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-static const NeopixelParams_t LedParams(NPX_SPI, NPX_GPIO, NPX_PIN, NPX_AF, NPX_DMA, NPX_DMA_MODE(NPX_DMA_CHNL));
+static const NeopixelParams_t LedParams(
+        NPX_SPI, NPX_GPIO, NPX_PIN, NPX_AF, NPX_DMA, NPX_DMA_MODE(NPX_DMA_CHNL),
+        PWR_EN_PIN);
 Neopixels_t Npx(&LedParams);
 Effects_t Leds(&Npx);
 
 Color_t Clr;
-PinOutput_t PwrPin { PWR_EN_PIN };
-TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
+//TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 
 TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
 static uint32_t AppearTimeout = 0;
@@ -50,10 +51,6 @@ int main(void) {
     Uart.InitAndStartRx();
     Printf("\r%S %S\r", APP_NAME, XSTRINGIFY(BUILD_TIME));
     Clk.PrintFreqs();
-
-    // Power pin
-    PwrPin.Init();
-    PwrPin.SetHi(); // PwrOff
 
     // Leds
     Npx.Init();
