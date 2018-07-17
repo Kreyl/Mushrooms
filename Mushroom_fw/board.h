@@ -55,6 +55,12 @@
 // LED
 #define LEDWS_PIN       GPIOB, 15, omPushPull, pudNone, AF0, psHigh
 
+// Neopixel
+#define NPX_SPI         SPI2
+#define NPX_GPIO        GPIOB
+#define NPX_PIN         15
+#define NPX_AF          AF0
+
 // Radio: SPI, PGpio, Sck, Miso, Mosi, Cs, Gdo0
 #define CC_Setup0       SPI1, GPIOA, 5,6,7, 4, 3
 #endif // GPIO
@@ -106,7 +112,8 @@
                             STM32_DMA_CR_CIRC         /* Circular buffer enable */)
 
 
-#define LEDWS_DMA       STM32_DMA1_STREAM5  // SPI2 TX
+#define NPX_DMA         STM32_DMA1_STREAM5
+#define NPX_DMA_CHNL    0 // dummy
 
 // ==== I2C1 ====
 #define I2C1_DMA_TX     STM32_DMA1_STREAM2

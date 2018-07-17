@@ -11,7 +11,8 @@
 #include "ch.h"
 #include "cc1101.h"
 #include "kl_buf.h"
-#include "color.h"
+#include "shell.h"
+#include "MsgQ.h"
 
 #if 0 // ========================= Signal levels ===============================
 // Python translation for db
@@ -57,48 +58,123 @@ static inline void Lvl250ToLvl1000(uint16_t *PLvl) {
 #define CC_TX_PWR   CC_Pwr0dBm
 
 #if 1 // =========================== Pkt_t =====================================
-union rPkt_t  {
-    uint32_t DWord;
-    Color_t Clr{0,0,0};
+struct rPkt_t  {
+    uint32_t TheWord;
     rPkt_t& operator = (const rPkt_t &Right) {
-        DWord = Right.DWord;
+        TheWord = Right.TheWord;
         return *this;
     }
-//    void Print() { Printf("%d %d %d %d %d %d; %X\r", Ch[0],Ch[1],Ch[2],Ch[3],R1, R2, Btns); }
 } __packed;
 
 #define RPKT_LEN    sizeof(rPkt_t)
-
-#define TEST_WORD   0xCa115ea1  // Call Seal
 #endif
 
-// ==== Sizes ====
+#define RSSI_MIN            -75
 
 #if 1 // ======================= Channels & cycles =============================
-#define RCHNL_SRV       0
+#define RCHNL_MIN       10
 #define ID2RCHNL(ID)    (RCHNL_MIN + ID)
-#define RCHNL           7
 #endif
 
 #if 1 // =========================== Timings ===================================
-#define RX_T_MS                 180      // pkt duration at 10k is around 12 ms
-#define RX_SLEEP_T_MS           810
 #define MIN_SLEEP_DURATION_MS   18
-#define RETRY_CNT               4
-
 #endif
 
-class rLevel1_t {
+#if 1 // ============================= RX Table ================================
+#define RXTABLE_SZ              8
+#define RXT_PKT_REQUIRED        FALSE
+class RxTable_t {
 private:
-    void TryToSleep(uint32_t SleepDuration) {
-//        if(SleepDuration >= MIN_SLEEP_DURATION_MS) CC.EnterPwrDown();
-        chThdSleepMilliseconds(SleepDuration); // XXX
+#if RXT_PKT_REQUIRED
+    rPkt_t IBuf[RXTABLE_SZ];
+#else
+    uint8_t IdBuf[RXTABLE_SZ];
+#endif
+    uint32_t Cnt = 0;
+public:
+#if RXT_PKT_REQUIRED
+    void AddOrReplaceExistingPkt(rPkt_t &APkt) {
+        for(uint32_t i=0; i<Cnt; i++) {
+            if(IBuf[i].ID == APkt.ID) {
+                IBuf[i] = APkt; // Replace with newer pkt
+                return;
+            }
+        }
+        if(Cnt >= RXTABLE_SZ) return;   // Buffer is full, nothing to do here
+        IBuf[Cnt] = APkt;
+        Cnt++;
     }
+
+    uint8_t GetPktByID(uint8_t ID, rPkt_t **ptr) {
+        for(uint32_t i=0; i<Cnt; i++) {
+            if(IBuf[i].ID == ID) {
+                *ptr = &IBuf[i];
+                return retvOk;
+            }
+        }
+        return retvNotFound;
+    }
+
+    bool IDPresents(uint8_t ID) {
+        for(uint32_t i=0; i<Cnt; i++) {
+            if(IBuf[i].ID == ID) return true;
+        }
+        return false;
+    }
+#else
+    void AddId(uint8_t ID) {
+        if(Cnt >= RXTABLE_SZ) return;   // Buffer is full, nothing to do here
+        for(uint32_t i=0; i<Cnt; i++) {
+            if(IdBuf[i] == ID) return;
+        }
+        IdBuf[Cnt] = ID;
+        Cnt++;
+    }
+
+    bool IDPresents(uint8_t ID) {
+        for(uint32_t i=0; i<Cnt; i++) {
+            if(IdBuf[i] == ID) return true;
+        }
+        return false;
+    }
+#endif
+    uint32_t GetCount() { return Cnt; }
+    void Clear() { Cnt = 0; }
+
+    void Print() {
+        Printf("RxTable Cnt: %u\r", Cnt);
+        for(uint32_t i=0; i<Cnt; i++) {
+#if RXT_PKT_REQUIRED
+//            Printf("ID: %u; State: %u\r", IBuf[i].ID, IBuf[i].State);
+#else
+            Printf("ID: %u\r", IdBuf[i]);
+#endif
+        }
+    }
+};
+#endif
+
+
+// Message queue
+#define R_MSGQ_LEN      9
+enum RmsgId_t { rmsgSetPwr, rmsgSetChnl, rmsgTimeToRx, rmsgTimeToTx, rmsgTimeToSleep, rmsgPktRx };
+struct RMsg_t {
+    RmsgId_t Cmd;
+    uint8_t Value;
+    RMsg_t() : Cmd(rmsgSetPwr), Value(0) {}
+    RMsg_t(RmsgId_t ACmd) : Cmd(ACmd), Value(0) {}
+    RMsg_t(RmsgId_t ACmd, uint8_t AValue) : Cmd(ACmd), Value(AValue) {}
+} __attribute__((packed));
+
+class rLevel1_t {
 public:
     int8_t Rssi;
+    rPkt_t PktTx, PktRx;
+    RxTable_t RxTable;
+//    EvtMsgQ_t<RMsg_t, R_MSGQ_LEN> RMsgQ;
     uint8_t Init();
-    rPkt_t Pkt;
     // Inner use
+    void TryToSleep(uint32_t SleepDuration);
     void ITask();
 };
 

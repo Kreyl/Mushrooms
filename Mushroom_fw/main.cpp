@@ -8,14 +8,13 @@
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
-//#include "ColorProfile.h"
 #include "SimpleSensors.h"
 #include "buttons.h"
 #include "board.h"
-//#include "kl_adc.h"
 #include "IntelLedEffs.h"
 #include "radio_lvl1.h"
 #include "SaveToFlash.h"
+#include "main.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -25,16 +24,17 @@ CmdUart_t Uart{&CmdUartParams};
 void OnCmd(Shell_t *PShell);
 void ITask();
 
-//Color_t Clr(0, 255, 0, 0);
-ColorHSV_t hsv(99, 100, 100);
+static const NeopixelParams_t LedParams(NPX_SPI, NPX_GPIO, NPX_PIN, NPX_AF, NPX_DMA, NPX_DMA_MODE(NPX_DMA_CHNL));
+Neopixels_t Npx(&LedParams);
+Effects_t Leds(&Npx);
+
+Color_t Clr;
 PinOutput_t PwrPin { PWR_EN_PIN };
 TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
-//TmrKL_t TmrAdc {MS2ST(450), evtIdEverySecond, tktPeriodic};
-//Profile_t Profile;
 
-//bool AdcFirstConv = true;
-
-//void BtnHandler(BtnEvt_t BtnEvt);
+TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
+static uint32_t AppearTimeout = 0;
+static uint32_t TableCheckTimeout = CHECK_PERIOD_S;
 #endif
 
 int main(void) {
@@ -55,32 +55,37 @@ int main(void) {
     PwrPin.Init();
     PwrPin.SetHi(); // PwrOff
 
-    LedEffectsInit();
+    // Leds
+    Npx.Init();
+    CommonEffectsInit();
 
-    if(Radio.Init() != retvOk) {
+    // Load and check color
+    Flash::Load((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
+    if(Clr.R > 255) Clr.R = 255;
+    if(Clr.G > 255) Clr.G = 255;
+    if(Clr.B > 255) Clr.B = 255;
+    if(Clr.Lum > 100) Clr.Lum = 100;
+    Clr.Print();
+
+    if(Radio.Init() == retvOk) {
+        Leds.AllTogetherNow(Clr);
+        chThdSleepMilliseconds(999);
+        Leds.AllTogetherNow(clBlack);
+    }
+    else {
         for(int i=0; i<4; i++) {
-            EffAllTogetherNow.SetupAndStart(clRed);
+            Leds.AllTogetherNow(clRed);
             chThdSleepMilliseconds(180);
-            EffAllTogetherNow.SetupAndStart(clBlack);
+            Leds.AllTogetherNow(clBlack);
             chThdSleepMilliseconds(180);
         }
     }
 
-    // Load and check color
-    Flash::Load((uint32_t*)&hsv, sizeof(ColorHSV_t));
-    if(hsv.H > 360) hsv.H = 120;
-    hsv.S = 100;
-    hsv.V = 100;
-    hsv.ToRGB().Print();
+//    EffOneByOne.SetupAndStart(hsv.ToRGB(), 360);
 
-    EffOneByOne.SetupAndStart(hsv.ToRGB(), 360);
+    TmrEverySecond.StartOrRestart();
 
-    SimpleSensors::Init();
-    // Adc
-//    PinSetupAnalog(BAT_MEAS_PIN);
-//    Adc.Init();
-//    Adc.EnableVRef();
-//    TmrAdc.InitAndStart();
+//    SimpleSensors::Init();
     // Main cycle
     ITask();
 }
@@ -95,92 +100,78 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdButtons:
-//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-                if(Msg.BtnEvtInfo.BtnID == 0) {
-                    if(hsv.H < 360) hsv.H++;
-                    else hsv.H = 0;
+            case evtIdEverySecond:
+//                Printf("Second\r");
+                if(AppearTimeout > 0) {
+                    AppearTimeout--;
+                    if(AppearTimeout == 0) EffOneByOne.SetupAndStart(clBlack, 720);
                 }
-                else if(Msg.BtnEvtInfo.BtnID == 1) {
-                    if(hsv.H > 0) hsv.H--;
-                    else hsv.H = 360;
+
+                if(TableCheckTimeout > 0) {
+                    TableCheckTimeout--;
+                    if(TableCheckTimeout == 0) {
+                        TableCheckTimeout = CHECK_PERIOD_S;
+                        // Check table
+//                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
+                        if(Radio.RxTable.GetCount() > 0) {
+                            AppearTimeout = APPEAR_DURATION;
+                            EffOneByOne.SetupAndStart(Clr, 720);
+                            Radio.RxTable.Clear();
+                        }
+                    }
                 }
-//                Printf("HSV %u; ", hsv.H);
-//                hsv.ToRGB().Print();
-                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
-                // Prepare to save
-                TmrSave.StartOrRestart();
                 break;
 
-            case evtIdTimeToSave:
-                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
-                EffAllTogetherNow.SetupAndStart(clBlack);
-                chThdSleepMilliseconds(153);
-                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
-                break;
+//            case evtIdButtons:
+////                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+//                if(Msg.BtnEvtInfo.BtnID == 0) {
+//                    if(hsv.H < 360) hsv.H++;
+//                    else hsv.H = 0;
+//                }
+//                else if(Msg.BtnEvtInfo.BtnID == 1) {
+//                    if(hsv.H > 0) hsv.H--;
+//                    else hsv.H = 360;
+//                }
+////                Printf("HSV %u; ", hsv.H);
+////                hsv.ToRGB().Print();
+//                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+//                // Prepare to save
+//                TmrSave.StartOrRestart();
+//                break;
 
-            case evtIdRadioCmd: {
-                Color_t Clr;
-                Clr.DWord32 = Msg.Value;
-                EffOneByOne.SetupAndStart(Clr, 360);
-            }
-            break;
+//            case evtIdTimeToSave:
+//                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
+//                EffAllTogetherNow.SetupAndStart(clBlack);
+//                chThdSleepMilliseconds(153);
+//                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+//                break;
+
+//            case evtIdRadioCmd: {
+//                Color_t Clr;
+//                Clr.DWord32 = Msg.Value;
+//                EffOneByOne.SetupAndStart(Clr, 360);
+//            }
+//            break;
 
             default: break;
         } // switch
-
-
-//        Effects.AllTogetherNow(hsv);
-//        hsv.H++;
-//        if(hsv.H > 360) hsv.H = 0;
-//        chThdSleepMilliseconds(90);
-
-
-//        Effects.AllTogetherSmoothly(clRed, 360);
-//        chThdSleepMilliseconds(2700);
-//        Effects.AllTogetherSmoothly(clGreen, 360);
-//        chThdSleepMilliseconds(2700);
-//        Effects.AllTogetherSmoothly(clBlue, 360);
-//        chThdSleepMilliseconds(2700);
-
-#if ADC_REQUIRED
-        if(Evt & EVT_SAMPLING) Adc.StartMeasurement();
-        if(Evt & EVT_ADC_DONE) {
-            if(AdcFirstConv) AdcFirstConv = false;
-            else {
-                uint32_t VBat_adc = Adc.GetResult(ADC_BAT_CHNL);
-                uint32_t VRef_adc = Adc.GetResult(ADC_VREFINT_CHNL);
-                __unused int32_t Vbat_mv = (2 * Adc.Adc2mV(VBat_adc, VRef_adc));   // Resistor divider
-//                Uart.Printf("VBat_adc: %u; Vref_adc: %u; VBat_mv: %u\r", VBat_adc, VRef_adc, Vbat_mv);
-//                if(Vbat_mv < 3600) SignalEvt(EVT_BATTERY_LOW);
-            } // if not big diff
-        } // evt
-#endif
     } // while true
 } // App_t::ITask()
 
-//void BtnHandler(BtnEvt_t BtnEvt) {
-//    if(BtnEvt == beShortPress) Uart.Printf("Btn Short\r");
-//    if(BtnEvt == beLongPress)  Uart.Printf("Btn Long\r");
-//    if(BtnEvt == beRelease)    Uart.Printf("Btn Release\r");
-//}
-
 void OnCmd(Shell_t *PShell) {
 	Cmd_t *PCmd = &PShell->Cmd;
-    __attribute__((unused)) int32_t dw32 = 0;  // May be unused in some configurations
-//    Uart.Printf("%S\r", PCmd->Name);
-    // Handle command
     if(PCmd->NameIs("Ping")) {
         PShell->Ack(retvOk);
     }
 
-    else if(PCmd->NameIs("RGBW")) {
-        Color_t Clr(0,0,0,0);
+    else if(PCmd->NameIs("RGB")) {
         if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
-        if(PCmd->GetNext<uint8_t>(&Clr.W) != retvOk) return;
         EffAllTogetherNow.SetupAndStart(Clr);
+        chThdSleepMilliseconds(999);
+        EffAllTogetherNow.SetupAndStart(clBlack);
+        Flash::Save((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
         PShell->Ack(retvOk);
     }
 

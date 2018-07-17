@@ -12,8 +12,8 @@
 // Bitrate
 //#define CC_BITRATE_10K
 //#define CC_BITRATE_38K4
-//#define  CC_BITRATE_100K
-#define CC_BITRATE_250K
+#define  CC_BITRATE_100K
+//#define CC_BITRATE_250K
 //#define CC_BITRATE_500K
 
 // ============================ Common use values ==============================
@@ -45,8 +45,8 @@
 #define CC_NUM_PREAMBLE     0x20    // 010 => 4 bytes of preamble
 #define CC_MDMCFG1_VALUE    (CC_FEC_EN | CC_NUM_PREAMBLE | CC_CHANSPC_E)
 
-#define CC_MCSM0_VALUE      0x18        // Calibrate at IDLE->RX,TX
-//#define CC_MCSM0_VALUE      0x08        // Never calibrate
+//#define CC_MCSM0_VALUE      0x18        // Calibrate at IDLE->RX,TX
+#define CC_MCSM0_VALUE      0x08        // Never calibrate
 
 // ==== MCSM1 ==== bits 7:6 not used, 5:4 ClearChannel mode, 3:2 RxOff mode, 1:0 TxOff mode
 #define CC_CCA_MODE         0b00000000  // Always clear
@@ -59,7 +59,8 @@
 #define CC_MCSM2_VALUE      0b00000111  // WOR settings, nothing interesting here
 
 #define CC_FIFOTHR_VALUE    0b00000111  // RX attenuation = 0; RXFIFO and TXFIFO thresholds: TX 33, RX 32
-#define CC_IOCFG2_VALUE     0x07        // GDO2 - Asserts when a packet has been received with CRC OK. De-asserts when the first byte is read from the RX FIFO.
+//#define CC_FIFOTHR_VALUE    0b00001100  // RX attenuation = 0; RXFIFO and TXFIFO thresholds: TX 13, RX 52
+#define CC_IOCFG2_VALUE     0x3E
 #define CC_IOCFG0_VALUE     0x06        // GDO0 - Asserts when sync word has been sent / received, and de-asserts at the end of the packet.
                                         // In RX, the pin will also deassert when a packet is discarded due to address or maximum length filtering
 

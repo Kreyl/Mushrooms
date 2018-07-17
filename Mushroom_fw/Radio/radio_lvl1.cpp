@@ -10,6 +10,7 @@
 #include "MsgQ.h"
 #include "shell.h"
 #include "board.h"
+#include "main.h"
 
 cc1101_t CC(CC_Setup0);
 
@@ -39,18 +40,26 @@ static void rLvl1Thread(void *arg) {
     Radio.ITask();
 }
 
+void rLevel1_t::TryToSleep(uint32_t SleepDuration) {
+    if(SleepDuration >= MIN_SLEEP_DURATION_MS) CC.EnterPwrDown();
+    chThdSleepMilliseconds(SleepDuration);
+}
+
 __noreturn
 void rLevel1_t::ITask() {
     while(true) {
-        CC.Recalibrate();
-        uint8_t RxRslt = CC.Receive(45, &Pkt, RPKT_LEN, &Rssi);
-        if(RxRslt == retvOk) {
-//            Printf("Rx %u %X; Rssi=%d\r", Pkt.Percent, Pkt.TestWord, Rssi);
-            // Send message to main thd
-            EvtMsg_t Msg(evtIdRadioCmd, (int32_t)Pkt.DWord);
-            EvtQMain.SendNowOrExit(Msg);
-        } // if RxRslt ok
-        chThdSleepMilliseconds(720);
+        // Iterate channels
+        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
+            CC.SetChannel(ID2RCHNL(i));
+//            Printf("%u\r", i);
+            CC.Recalibrate();
+            uint8_t RxRslt = CC.Receive(27, &PktRx, RPKT_LEN, &Rssi);
+            if(RxRslt == retvOk) {
+//                Printf("Ch=%u; Rssi=%d\r", ID2RCHNL(i), Rssi);
+                if(PktRx.TheWord == 0xCA115EA1) RxTable.AddId(i);
+            }
+        } // for i
+        TryToSleep(720);
     } // while
 }
 #endif // task
@@ -65,7 +74,7 @@ uint8_t rLevel1_t::Init() {
     if(CC.Init() == retvOk) {
         CC.SetTxPower(CC_TX_PWR);
         CC.SetPktSize(RPKT_LEN);
-        CC.SetChannel(RCHNL);
+        CC.SetChannel(0);
         // Thread
         chThdCreateStatic(warLvl1Thread, sizeof(warLvl1Thread), HIGHPRIO, (tfunc_t)rLvl1Thread, NULL);
         return retvOk;

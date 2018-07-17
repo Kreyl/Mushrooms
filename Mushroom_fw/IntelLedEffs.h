@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include "color.h"
 #include "ws2812b.h"
+//#include "sk6812.h"
 #include "ChunkTypes.h"
 
 #if 1 // =============================== Chunk =================================
@@ -35,27 +36,29 @@ public:
 #endif
 
 #if 1 // ============================== Effects ================================
-enum EffState_t {effEnd, effInProgress};
+enum EffState_t {effNone, effAllTogetherSmoothly};
 
-class EffBase_t {
+class Effects_t {
+private:
+    Color_t DesiredClr[LED_CNT];
+    Neopixels_t *Leds;
+    uint32_t ISmoothValue = 0;
+    uint32_t ICalcDelayN(uint32_t n, uint32_t SmoothValue) {
+        return Leds->ICurrentClr[n].DelayToNextAdj(DesiredClr[n], SmoothValue);
+    }
+    virtual_timer_t Tmr;
+    void ProcessAllTogetherSmoothly();
 public:
-    virtual EffState_t Process() = 0;
+    Effects_t(Neopixels_t *PLeds) : Leds(PLeds) {}
+    void AllTogetherNow(Color_t Color);
+    void AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue);
+    // Inner use
+    void Process();
+    EffState_t State = effNone;
 };
 
-class EffAllTogetherNow_t : public EffBase_t {
-public:
-    void SetupAndStart(Color_t Color);
-    EffState_t Process() { return effEnd; } // Dummy, never used
-};
 
-class EffAllTogetherSmoothly_t : public EffBase_t {
-protected:
-    uint32_t ISmoothValue;
-public:
-    void SetupAndStart(Color_t Color, uint32_t ASmoothValue);
-    EffState_t Process();
-};
-
+/*
 class EffAllTogetherSequence_t : public EffBase_t, public BaseSequencer_t<LedRGBChunk_t> {
 private:
     Color_t ICurrColor;
@@ -116,7 +119,10 @@ extern EffOneByOne_t EffOneByOne;
 extern EffFadeOneByOne_t EffFadeOneByOne;
 extern EffAllTogetherSequence_t EffAllTogetherSequence;
 
-void LedEffectsInit();
+
+*/
+
+void CommonEffectsInit();
 
 #endif
 

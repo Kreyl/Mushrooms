@@ -6,82 +6,83 @@
  */
 
 #include "IntelLedEffs.h"
-
-IntelLeds_t Leds;
+#include "MsgQ.h"
 
 #if 1 // ========================== Common Effects =============================
-EffAllTogetherNow_t EffAllTogetherNow;
-EffAllTogetherSmoothly_t EffAllTogetherSmoothly;
-EffOneByOne_t EffOneByOne;
-EffFadeOneByOne_t EffFadeOneByOne(180, clGreen, clBlack);
-EffAllTogetherSequence_t EffAllTogetherSequence;
+struct EffMsg_t {
+    Effects_t* Ptr;
+    EffMsg_t() : Ptr(nullptr) {}
+    EffMsg_t(Effects_t *APtr) : Ptr(APtr) {}
+    EffMsg_t& operator = (const EffMsg_t &Right) {
+        Ptr = Right.Ptr;
+        return *this;
+    }
+} __attribute__((__packed__));
 
-static EffBase_t *PCurrentEff = nullptr;
-static thread_reference_t PThd = nullptr;
-static Color_t DesiredClr[LED_CNT];
+
+static EvtMsgQ_t<EffMsg_t, MAIN_EVT_Q_LEN> EvtQEffects;
 
 static THD_WORKING_AREA(waEffectsThread, 256);
 __noreturn
 static void EffectsThread(void *arg) {
     chRegSetThreadName("Effects");
     while(true) {
-        if(PCurrentEff == nullptr) {
-            chSysLock();
-            chThdSuspendS(&PThd);
-            chSysUnlock();
-        }
-        else {
-            if(PCurrentEff->Process() == effEnd) {
-                PCurrentEff = nullptr;
-            }
-        }
+        EffMsg_t Msg = EvtQEffects.Fetch(TIME_INFINITE);
+        Msg.Ptr->Process();
+    } // while
+}
+
+void CommonEffectsInit() {
+    EvtQEffects.Init();
+    chThdCreateStatic(waEffectsThread, sizeof(waEffectsThread), HIGHPRIO, (tfunc_t)EffectsThread, NULL);
+}
+
+void Effects_t::Process() {
+    switch(State) {
+        case effNone: break;
+        case effAllTogetherSmoothly: ProcessAllTogetherSmoothly(); break;
     }
 }
 
-uint32_t ICalcDelayN(uint32_t n, uint32_t SmoothValue) {
-    return Leds.ICurrentClr[n].DelayToNextAdj(DesiredClr[n], SmoothValue);
-}
-
-void LedEffectsInit() {
-    Leds.Init();
-    chThdCreateStatic(waEffectsThread, sizeof(waEffectsThread), HIGHPRIO, (tfunc_t)EffectsThread, NULL);
+// Universal VirtualTimer callback
+void TmrEffCallback(void *p) {
+    chSysLockFromISR();
+    EvtQEffects.SendNowOrExitI(EffMsg_t((Effects_t*)p));
+    chSysUnlockFromISR();
 }
 #endif
 
 #if 1 // ========================= Individual effects ==========================
-void EffAllTogetherNow_t::SetupAndStart(Color_t Color) {
-    PCurrentEff = nullptr;
-    for(uint32_t i=0; i<LED_CNT; i++) Leds.ICurrentClr[i] = Color;
-    Leds.ISetCurrentColors();
+void Effects_t::AllTogetherNow(Color_t Color) {
+    State = effNone;
+    chVTReset(&Tmr);
+    for(uint32_t i=0; i<LED_CNT; i++) Leds->ICurrentClr[i] = Color;
+    Leds->ISetCurrentColors();
 }
 
-void EffAllTogetherSmoothly_t::SetupAndStart(Color_t Color, uint32_t ASmoothValue) {
-    if(ASmoothValue == 0) EffAllTogetherNow.SetupAndStart(Color);
+void Effects_t::AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue) {
+    if(ASmoothValue == 0) AllTogetherNow(Color);
     else {
-        chSysLock();
         ISmoothValue = ASmoothValue;
         for(int32_t i=0; i<LED_CNT; i++) DesiredClr[i] = Color;
-        PCurrentEff = this;
-        chThdResumeS(&PThd, MSG_OK);
-        chSysUnlock();
+        State = effAllTogetherSmoothly;
+        chVTSet(&Tmr, MS2ST(11), TmrEffCallback, this); // Arm timer for some time
     }
 }
 
-EffState_t EffAllTogetherSmoothly_t::Process() {
+void Effects_t::ProcessAllTogetherSmoothly() {
     uint32_t Delay = 0;
     for(int32_t i=0; i<LED_CNT; i++) {
         uint32_t tmp = ICalcDelayN(i, ISmoothValue);  // }
         if(tmp > Delay) Delay = tmp;                  // } Calculate Delay
-        Leds.ICurrentClr[i].Adjust(DesiredClr[i]);    // Adjust current color
+        Leds->ICurrentClr[i].Adjust(DesiredClr[i]);   // Adjust current color
     } // for
-    Leds.ISetCurrentColors();
-    if (Delay == 0) return effEnd;  // Setup completed
-    else {
-        chThdSleepMilliseconds(Delay);
-        return effInProgress;
-    }
+    Leds->ISetCurrentColors();
+    if (Delay == 0) State = effNone;  // Setup completed
+    else chVTSet(&Tmr, MS2ST(Delay), TmrEffCallback, this); // Arm timer
 }
 
+/*
 void EffOneByOne_t::SetupAndStart(Color_t ATargetClr, uint32_t ASmoothValue) {
     if(ASmoothValue == 0) EffAllTogetherNow.SetupAndStart(ATargetClr);
     else {
@@ -141,4 +142,5 @@ void EffFadeOneByOne_t::SetupAndStart(int32_t ThrLo, int32_t ThrHi) {
     chThdResumeS(&PThd, MSG_OK);
     chSysUnlock();
 }
+*/
 #endif
