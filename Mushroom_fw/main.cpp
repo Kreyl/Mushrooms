@@ -104,7 +104,7 @@ void ITask() {
 //                Printf("Second\r");
                 if(AppearTimeout > 0) {
                     AppearTimeout--;
-                    if(AppearTimeout == 0) EffOneByOne.SetupAndStart(clBlack, 720);
+                    if(AppearTimeout == 0) Leds.OneByOne(clBlack, 720);
                 }
 
                 if(TableCheckTimeout > 0) {
@@ -115,7 +115,7 @@ void ITask() {
 //                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
                         if(Radio.RxTable.GetCount() > 0) {
                             AppearTimeout = APPEAR_DURATION;
-                            EffOneByOne.SetupAndStart(Clr, 720);
+                            Leds.OneByOne(Clr, 720);
                             Radio.RxTable.Clear();
                         }
                     }
@@ -168,9 +168,9 @@ void OnCmd(Shell_t *PShell) {
         if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
-        EffAllTogetherNow.SetupAndStart(Clr);
+        Leds.AllTogetherNow(Clr);
         chThdSleepMilliseconds(999);
-        EffAllTogetherNow.SetupAndStart(clBlack);
+        Leds.AllTogetherNow(clBlack);
         Flash::Save((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
         PShell->Ack(retvOk);
     }

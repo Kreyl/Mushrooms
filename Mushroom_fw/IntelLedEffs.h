@@ -36,22 +36,25 @@ public:
 #endif
 
 #if 1 // ============================== Effects ================================
-enum EffState_t {effNone, effAllTogetherSmoothly};
+enum EffState_t {effNone, effAllTogetherSmoothly, effOneByOne};
 
 class Effects_t {
 private:
     Color_t DesiredClr[LED_CNT];
     Neopixels_t *Leds;
     uint32_t ISmoothValue = 0;
+    uint32_t CurrentIndx = 0;
     uint32_t ICalcDelayN(uint32_t n, uint32_t SmoothValue) {
         return Leds->ICurrentClr[n].DelayToNextAdj(DesiredClr[n], SmoothValue);
     }
     virtual_timer_t Tmr;
     void ProcessAllTogetherSmoothly();
+    void ProcessOneByOne();
 public:
     Effects_t(Neopixels_t *PLeds) : Leds(PLeds) {}
     void AllTogetherNow(Color_t Color);
     void AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue);
+    void OneByOne(Color_t Color, uint32_t ASmoothValue);
     // Inner use
     void Process();
     EffState_t State = effNone;
