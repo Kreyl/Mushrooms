@@ -31,7 +31,8 @@ Neopixels_t Npx(&LedParams);
 Effects_t Leds(&Npx);
 
 Color_t Clr;
-//TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
+ColorHSV_t ClrHsv;
+TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 
 TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
 static uint32_t AppearTimeout = 0;
@@ -63,6 +64,7 @@ int main(void) {
     if(Clr.B > 255) Clr.B = 255;
     if(Clr.Lum > 100) Clr.Lum = 100;
     Clr.Print();
+    ClrHsv.FromRGB(Clr);
 
     if(Radio.Init() == retvOk) {
         Leds.AllTogetherNow(Clr);
@@ -82,7 +84,7 @@ int main(void) {
 
     TmrEverySecond.StartOrRestart();
 
-//    SimpleSensors::Init();
+    SimpleSensors::Init();
     // Main cycle
     ITask();
 }
@@ -119,36 +121,38 @@ void ITask() {
                 }
                 break;
 
-//            case evtIdButtons:
-////                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-//                if(Msg.BtnEvtInfo.BtnID == 0) {
-//                    if(hsv.H < 360) hsv.H++;
-//                    else hsv.H = 0;
-//                }
-//                else if(Msg.BtnEvtInfo.BtnID == 1) {
-//                    if(hsv.H > 0) hsv.H--;
-//                    else hsv.H = 360;
-//                }
-////                Printf("HSV %u; ", hsv.H);
-////                hsv.ToRGB().Print();
-//                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
-//                // Prepare to save
-//                TmrSave.StartOrRestart();
-//                break;
+            case evtIdButtons:
+                AppearTimeout = APPEAR_DURATION;
+//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+                if(Msg.BtnEvtInfo.BtnID == 0) {
+                    if(ClrHsv.H < 360) ClrHsv.H++;
+                    else ClrHsv.H = 0;
+                }
+                else if(Msg.BtnEvtInfo.BtnID == 1) {
+                    if(ClrHsv.H > 0) ClrHsv.H--;
+                    else ClrHsv.H = 360;
+                }
+//                Printf("HSV %u; ", hsv.H);
+//                hsv.ToRGB().Print();
+                Leds.AllTogetherNow(ClrHsv.ToRGB());
+                // Prepare to save
+                TmrSave.StartOrRestart();
 
-//            case evtIdTimeToSave:
-//                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
-//                EffAllTogetherNow.SetupAndStart(clBlack);
-//                chThdSleepMilliseconds(153);
-//                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
-//                break;
+                break;
 
-//            case evtIdRadioCmd: {
-//                Color_t Clr;
-//                Clr.DWord32 = Msg.Value;
-//                EffOneByOne.SetupAndStart(Clr, 360);
-//            }
-//            break;
+            case evtIdTimeToSave:
+                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
+                EffAllTogetherNow.SetupAndStart(clBlack);
+                chThdSleepMilliseconds(153);
+                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+                break;
+
+            case evtIdRadioCmd: {
+                Color_t Clr;
+                Clr.DWord32 = Msg.Value;
+                EffOneByOne.SetupAndStart(Clr, 360);
+            }
+            break;
 
             default: break;
         } // switch

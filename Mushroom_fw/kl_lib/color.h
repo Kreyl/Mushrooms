@@ -250,6 +250,32 @@ struct ColorHSV_t {
         return rgb;
     }
 
+    void FromRGB(int32_t Red, int32_t Green, int32_t Blue) {
+        int32_t Max, Min;
+        // Find Min & Max
+        Max = Red;
+        if(Max < Green) Max = Green;
+        if(Max < Blue) Max = Blue;
+        Min = Red;
+        if(Min > Green) Min = Green;
+        if(Min > Blue) Min = Blue;
+        // H
+        if(Max == Min) H = 0;
+        else if(Max == Red and Green >= Blue) H = (60 * (Green - Blue)) / (Max - Min) + 0;
+        else if(Max == Red and Green <  Blue) H = (60 * (Green - Blue)) / (Max - Min) + 360;
+        else if(Max == Green)                 H = (60 * (Blue - Red))   / (Max - Min) + 120;
+        else if(Max == Blue)                  H = (60 * (Red - Green))  / (Max - Min) + 240;
+        // S
+        if(Max == 0) S = 0;
+        else S = 100 - (100 * Min) / Max;
+        // V
+        V = (100 * Max) / 255;
+    }
+
+    void FromRGB(Color_t Clr) {
+        FromRGB(Clr.R, Clr.G, Clr.B);
+    }
+
     ColorHSV_t(uint16_t AH, uint8_t AS, uint8_t AV) : H(AH), S(AS), V(AV) {}
     ColorHSV_t(const ColorHSV_t &AClr) : H(AClr.H), S(AClr.S), V(AClr.V) {}
 } __attribute__((packed));
