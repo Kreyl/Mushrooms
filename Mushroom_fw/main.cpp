@@ -13,7 +13,7 @@
 #include "board.h"
 #include "IntelLedEffs.h"
 #include "SaveToFlash.h"
-#include "main.h"
+#include "radio_lvl1.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -59,6 +59,8 @@ int main(void) {
     Leds.AllTogetherSmoothly(hsv.ToRGB(), 360);
 
     SimpleSensors::Init();
+
+    Radio.Init(); // Init and enter PwrDown
 
     // Main cycle
     ITask();
@@ -120,18 +122,16 @@ void OnCmd(Shell_t *PShell) {
 //        PShell->Ack(retvOk);
 //    }
 
-//    else if(PCmd->NameIs("HSV")) {
-//        ColorHSV_t ClrHsv(0,0,0);
-//        if(PCmd->GetNextUint16(&ClrHsv.H) != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsv.S)   != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsv.V)   != OK) return;
-//        Color_t Clr;
-//        ClrHsv.ToRGB(Clr);
-////        Clr.Print();
-////        Uart.Printf("{%u; %u; %u}\r", R, G, B);
-////        Led.SetColor(Clr, 100);
-//        PShell->Ack(OK);
-//    }
+    else if(PCmd->NameIs("HSV")) {
+        ColorHSV_t IClrHsv(0,0,0);
+        if(PCmd->GetNext<uint16_t>(&IClrHsv.H) != retvOk) { PShell->Ack(retvCmdError); return; }
+        if(PCmd->GetNext<uint8_t>(&IClrHsv.S)  != retvOk) { PShell->Ack(retvCmdError); return; }
+        if(PCmd->GetNext<uint8_t>(&IClrHsv.V)  != retvOk) { PShell->Ack(retvCmdError); return; }
+        hsv = IClrHsv;
+        Leds.AllTogetherNow(hsv.ToRGB());
+        TmrSave.StartOrRestart();
+        PShell->Ack(retvOk);
+    }
 
     else PShell->Ack(retvCmdUnknown);
 }
