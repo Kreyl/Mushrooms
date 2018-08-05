@@ -29,9 +29,8 @@ static const NeopixelParams_t LedParams(
 Neopixels_t Npx(&LedParams);
 Effects_t Leds(&Npx);
 
-Color_t Clr(207, 207, 255);
-
-TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
+ColorHSV_t hsv(99, 100, 100);
+TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 #endif
 
 int main(void) {
@@ -48,11 +47,18 @@ int main(void) {
     Printf("\r%S %S\r", APP_NAME, XSTRINGIFY(BUILD_TIME));
     Clk.PrintFreqs();
 
+    // Load and check color
+    Flash::Load((uint32_t*)&hsv, sizeof(ColorHSV_t));
+    if(hsv.H > 360) hsv.H = 0;
+    hsv.S = 100;
+    hsv.V = 100;
+
     // Leds
     Npx.Init();
     CommonEffectsInit();
+    Leds.AllTogetherSmoothly(hsv.ToRGB(), 360);
 
-    TmrEverySecond.StartOrRestart();
+    SimpleSensors::Init();
 
     // Main cycle
     ITask();
@@ -68,7 +74,28 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdEverySecond:
+            case evtIdButtons:
+//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+                if(Msg.BtnEvtInfo.BtnID == 0) {
+                    if(hsv.H < 360) hsv.H++;
+                    else hsv.H = 0;
+                }
+                else if(Msg.BtnEvtInfo.BtnID == 1) {
+                    if(hsv.H > 0) hsv.H--;
+                    else hsv.H = 360;
+                }
+//                Printf("HSV %u; ", hsv.H);
+//                hsv.ToRGB().Print();
+                Leds.AllTogetherNow(hsv.ToRGB());
+                // Prepare to save
+                TmrSave.StartOrRestart();
+                break;
+
+            case evtIdTimeToSave:
+                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
+                Leds.AllTogetherNow(clBlack);
+                chThdSleepMilliseconds(153);
+                Leds.AllTogetherNow(hsv.ToRGB());
                 break;
 
             default: break;
@@ -82,16 +109,16 @@ void OnCmd(Shell_t *PShell) {
         PShell->Ack(retvOk);
     }
 
-    else if(PCmd->NameIs("RGB")) {
-        if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
-        if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
-        if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
-        Leds.AllTogetherNow(Clr);
-        chThdSleepMilliseconds(999);
-        Leds.AllTogetherNow(clBlack);
-        Flash::Save((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
-        PShell->Ack(retvOk);
-    }
+//    else if(PCmd->NameIs("RGB")) {
+//        if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
+//        if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
+//        if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
+//        Leds.AllTogetherNow(Clr);
+//        chThdSleepMilliseconds(999);
+//        Leds.AllTogetherNow(clBlack);
+//        Flash::Save((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
+//        PShell->Ack(retvOk);
+//    }
 
 //    else if(PCmd->NameIs("HSV")) {
 //        ColorHSV_t ClrHsv(0,0,0);
