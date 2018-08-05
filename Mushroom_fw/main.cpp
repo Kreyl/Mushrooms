@@ -30,9 +30,7 @@ static const NeopixelParams_t LedParams(
 Neopixels_t Npx(&LedParams);
 Effects_t Leds(&Npx);
 
-Color_t Clr;
-ColorHSV_t ClrHsv;
-TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
+Color_t Clr(207, 207, 255);
 
 TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
 static uint32_t AppearTimeout = 0;
@@ -57,19 +55,8 @@ int main(void) {
     Npx.Init();
     CommonEffectsInit();
 
-    // Load and check color
-    Flash::Load((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
-    if(Clr.R > 255) Clr.R = 255;
-    if(Clr.G > 255) Clr.G = 255;
-    if(Clr.B > 255) Clr.B = 255;
-    if(Clr.Lum > 100) Clr.Lum = 100;
-    Clr.Print();
-    ClrHsv.FromRGB(Clr);
-
     if(Radio.Init() == retvOk) {
-        Leds.AllTogetherNow(Clr);
-        chThdSleepMilliseconds(999);
-        Leds.AllTogetherNow(clBlack);
+        Leds.AllTogetherSmoothly(Clr, 360);
     }
     else {
         for(int i=0; i<4; i++) {
@@ -80,11 +67,8 @@ int main(void) {
         }
     }
 
-//    EffOneByOne.SetupAndStart(hsv.ToRGB(), 360);
-
     TmrEverySecond.StartOrRestart();
 
-    SimpleSensors::Init();
     // Main cycle
     ITask();
 }
@@ -120,39 +104,6 @@ void ITask() {
                     }
                 }
                 break;
-
-            case evtIdButtons:
-                AppearTimeout = APPEAR_DURATION;
-//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-                if(Msg.BtnEvtInfo.BtnID == 0) {
-                    if(ClrHsv.H < 360) ClrHsv.H++;
-                    else ClrHsv.H = 0;
-                }
-                else if(Msg.BtnEvtInfo.BtnID == 1) {
-                    if(ClrHsv.H > 0) ClrHsv.H--;
-                    else ClrHsv.H = 360;
-                }
-//                Printf("HSV %u; ", hsv.H);
-//                hsv.ToRGB().Print();
-                Leds.AllTogetherNow(ClrHsv.ToRGB());
-                // Prepare to save
-                TmrSave.StartOrRestart();
-
-                break;
-
-            case evtIdTimeToSave:
-                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
-                EffAllTogetherNow.SetupAndStart(clBlack);
-                chThdSleepMilliseconds(153);
-                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
-                break;
-
-            case evtIdRadioCmd: {
-                Color_t Clr;
-                Clr.DWord32 = Msg.Value;
-                EffOneByOne.SetupAndStart(Clr, 360);
-            }
-            break;
 
             default: break;
         } // switch
