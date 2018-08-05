@@ -12,7 +12,6 @@
 #include "buttons.h"
 #include "board.h"
 #include "IntelLedEffs.h"
-#include "radio_lvl1.h"
 #include "SaveToFlash.h"
 #include "main.h"
 
@@ -33,8 +32,6 @@ Effects_t Leds(&Npx);
 Color_t Clr(207, 207, 255);
 
 TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
-static uint32_t AppearTimeout = 0;
-static uint32_t TableCheckTimeout = CHECK_PERIOD_S;
 #endif
 
 int main(void) {
@@ -55,18 +52,6 @@ int main(void) {
     Npx.Init();
     CommonEffectsInit();
 
-    if(Radio.Init() == retvOk) {
-        Leds.AllTogetherSmoothly(Clr, 360);
-    }
-    else {
-        for(int i=0; i<4; i++) {
-            Leds.AllTogetherNow(clRed);
-            chThdSleepMilliseconds(180);
-            Leds.AllTogetherNow(clBlack);
-            chThdSleepMilliseconds(180);
-        }
-    }
-
     TmrEverySecond.StartOrRestart();
 
     // Main cycle
@@ -84,25 +69,6 @@ void ITask() {
                 break;
 
             case evtIdEverySecond:
-//                Printf("Second\r");
-                if(AppearTimeout > 0) {
-                    AppearTimeout--;
-                    if(AppearTimeout == 0) Leds.OneByOne(clBlack, 720);
-                }
-
-                if(TableCheckTimeout > 0) {
-                    TableCheckTimeout--;
-                    if(TableCheckTimeout == 0) {
-                        TableCheckTimeout = CHECK_PERIOD_S;
-                        // Check table
-//                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
-                        if(Radio.RxTable.GetCount() > 0) {
-                            AppearTimeout = APPEAR_DURATION;
-                            Leds.OneByOne(Clr, 720);
-                            Radio.RxTable.Clear();
-                        }
-                    }
-                }
                 break;
 
             default: break;
