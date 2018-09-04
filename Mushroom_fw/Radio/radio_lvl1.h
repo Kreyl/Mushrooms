@@ -58,15 +58,15 @@ static inline void Lvl250ToLvl1000(uint16_t *PLvl) {
 #define CC_TX_PWR   CC_Pwr0dBm
 
 #if 1 // =========================== Pkt_t =====================================
-struct rPkt_t  {
-    uint32_t TheWord;
-    rPkt_t& operator = (const rPkt_t &Right) {
-        TheWord = Right.TheWord;
-        return *this;
-    }
-} __packed;
-
+struct rPkt_t {
+    uint32_t DWord;
+    uint32_t Type;
+//    bool operator == (const rPkt_t &APkt) { return (DWord32 == APkt.DWord32); }
+//    rPkt_t& operator = (const rPkt_t &Right) { DWord32 = Right.DWord32; return *this; }
+} __attribute__ ((__packed__));
 #define RPKT_LEN    sizeof(rPkt_t)
+
+#define THE_WORD        0xCA115EA1
 #endif
 
 #define RSSI_MIN            -75
@@ -81,7 +81,7 @@ struct rPkt_t  {
 #endif
 
 #if 1 // ============================= RX Table ================================
-#define RXTABLE_SZ              8
+#define RXTABLE_SZ              7
 #define RXT_PKT_REQUIRED        FALSE
 class RxTable_t {
 private:
@@ -91,6 +91,7 @@ private:
     uint8_t IdBuf[RXTABLE_SZ];
 #endif
     uint32_t Cnt = 0;
+    int32_t MaxRssi = -117;
 public:
 #if RXT_PKT_REQUIRED
     void AddOrReplaceExistingPkt(rPkt_t &APkt) {

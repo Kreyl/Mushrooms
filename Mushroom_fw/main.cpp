@@ -1,10 +1,3 @@
-/*
- * main.cpp
- *
- *  Created on: 20 февр. 2014 г.
- *      Author: g.kruglov
- */
-
 #include "kl_lib.h"
 #include "MsgQ.h"
 #include "shell.h"
@@ -15,6 +8,7 @@
 #include "radio_lvl1.h"
 #include "SaveToFlash.h"
 #include "main.h"
+#include "Sequences.h"
 
 #if 1 // ======================== Variables and defines ========================
 // Forever
@@ -29,12 +23,6 @@ static const NeopixelParams_t LedParams(
         PWR_EN_PIN);
 Neopixels_t Npx(&LedParams);
 Effects_t Leds(&Npx);
-
-Color_t Clr(207, 207, 255);
-
-TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
-static uint32_t AppearTimeout = 0;
-static uint32_t TableCheckTimeout = CHECK_PERIOD_S;
 #endif
 
 int main(void) {
@@ -56,18 +44,13 @@ int main(void) {
     CommonEffectsInit();
 
     if(Radio.Init() == retvOk) {
-        Leds.AllTogetherSmoothly(Clr, 360);
+//        Leds.SeqAllTogetherStartOrRestart(lsqIdle);
+        Leds.SeqAllTogetherStartOrRestart(lsqButton);
     }
     else {
-        for(int i=0; i<4; i++) {
-            Leds.AllTogetherNow(clRed);
-            chThdSleepMilliseconds(180);
-            Leds.AllTogetherNow(clBlack);
-            chThdSleepMilliseconds(180);
-        }
+        Leds.SeqAllTogetherStartOrRestart(lsqFailure);
+        chThdSleepMilliseconds(1008);
     }
-
-    TmrEverySecond.StartOrRestart();
 
     // Main cycle
     ITask();
@@ -83,27 +66,10 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdEverySecond:
-//                Printf("Second\r");
-                if(AppearTimeout > 0) {
-                    AppearTimeout--;
-                    if(AppearTimeout == 0) Leds.OneByOne(clBlack, 720);
-                }
-
-                if(TableCheckTimeout > 0) {
-                    TableCheckTimeout--;
-                    if(TableCheckTimeout == 0) {
-                        TableCheckTimeout = CHECK_PERIOD_S;
-                        // Check table
-//                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
-                        if(Radio.RxTable.GetCount() > 0) {
-                            AppearTimeout = APPEAR_DURATION;
-                            Leds.OneByOne(Clr, 720);
-                            Radio.RxTable.Clear();
-                        }
-                    }
-                }
-                break;
+            case evtIdRadioNoone:  Leds.SeqAllTogetherStartOrRestart (lsqIdle); break;
+            case evtIdRadioButton: Leds.SeqAllTogetherStartOrContinue(lsqButton); break;
+            case evtIdRadioLowPwr: Leds.SeqAllTogetherStartOrContinue(lsqLowPower); break;
+            case evtIdRadioHiPwr:  Leds.SeqAllTogetherStartOrContinue(lsqHiPower); break;
 
             default: break;
         } // switch
@@ -117,28 +83,13 @@ void OnCmd(Shell_t *PShell) {
     }
 
     else if(PCmd->NameIs("RGB")) {
+        Color_t Clr;
         if(PCmd->GetNext<uint8_t>(&Clr.R) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.G) != retvOk) return;
         if(PCmd->GetNext<uint8_t>(&Clr.B) != retvOk) return;
         Leds.AllTogetherNow(Clr);
-        chThdSleepMilliseconds(999);
-        Leds.AllTogetherNow(clBlack);
-        Flash::Save((uint32_t*)&Clr.DWord32, sizeof(uint32_t));
         PShell->Ack(retvOk);
     }
-
-//    else if(PCmd->NameIs("HSV")) {
-//        ColorHSV_t ClrHsv(0,0,0);
-//        if(PCmd->GetNextUint16(&ClrHsv.H) != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsv.S)   != OK) return;
-//        if(PCmd->GetNextByte(&ClrHsv.V)   != OK) return;
-//        Color_t Clr;
-//        ClrHsv.ToRGB(Clr);
-////        Clr.Print();
-////        Uart.Printf("{%u; %u; %u}\r", R, G, B);
-////        Led.SetColor(Clr, 100);
-//        PShell->Ack(OK);
-//    }
 
     else PShell->Ack(retvCmdUnknown);
 }

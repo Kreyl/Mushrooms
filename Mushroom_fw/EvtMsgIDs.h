@@ -17,4 +17,10 @@ enum EvtMsgId_t {
     evtIdTimeToSave,
     evtIdRadioCmd,
     evtIdButtons,
+
+    // Radio
+    evtIdRadioNoone,
+    evtIdRadioButton,
+    evtIdRadioLowPwr,
+    evtIdRadioHiPwr,
 };

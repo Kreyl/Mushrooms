@@ -36,7 +36,7 @@ public:
 #endif
 
 #if 1 // ============================== Effects ================================
-enum EffState_t {effNone, effAllTogetherSmoothly, effOneByOne};
+enum EffState_t {effNone, effAllTogetherSmoothly, effOneByOne, effSequence};
 
 class Effects_t {
 private:
@@ -50,11 +50,20 @@ private:
     virtual_timer_t Tmr;
     void ProcessAllTogetherSmoothly();
     void ProcessOneByOne();
+    // Sequences
+    const LedRGBChunk_t *IPStartChunk, *IPCurrentChunk;
+    int32_t RepeatCounter = -1;
+    void ProcessSequence();
+    SequencerLoopTask_t ISetup();
+    void SetupDelay(uint32_t ms);
 public:
     Effects_t(Neopixels_t *PLeds) : Leds(PLeds) {}
     void AllTogetherNow(Color_t Color);
     void AllTogetherSmoothly(Color_t Color, uint32_t ASmoothValue);
     void OneByOne(Color_t Color, uint32_t ASmoothValue);
+    // Sequences
+    void SeqAllTogetherStartOrRestart(const LedRGBChunk_t *PChunk);
+    void SeqAllTogetherStartOrContinue(const LedRGBChunk_t *PChunk);
     // Inner use
     void Process();
     EffState_t State = effNone;

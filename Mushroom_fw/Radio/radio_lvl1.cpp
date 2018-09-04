@@ -55,8 +55,8 @@ void rLevel1_t::ITask() {
             CC.Recalibrate();
             uint8_t RxRslt = CC.Receive(27, &PktRx, RPKT_LEN, &Rssi);
             if(RxRslt == retvOk) {
-//                Printf("Ch=%u; Rssi=%d\r", ID2RCHNL(i), Rssi);
-                if(PktRx.TheWord == 0xCA115EA1) RxTable.AddId(i);
+                Printf("Ch=%u; Rssi=%d\r", ID2RCHNL(i), Rssi);
+//                if(PktRx.DWord == 0xCA115EA1) RxTable.AddId(i);
             }
         } // for i
         TryToSleep(720);
