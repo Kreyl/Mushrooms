@@ -45,21 +45,45 @@ void rLevel1_t::TryToSleep(uint32_t SleepDuration) {
     chThdSleepMilliseconds(SleepDuration);
 }
 
+#define RSSI_DUMMY  (-117) // Some lowest value not possible
+
 __noreturn
 void rLevel1_t::ITask() {
+    EvtMsg_t msg;
+    int32_t MaxRssi;
     while(true) {
-        // Iterate channels
-        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
-            CC.SetChannel(ID2RCHNL(i));
-//            Printf("%u\r", i);
-            CC.Recalibrate();
-            uint8_t RxRslt = CC.Receive(27, &PktRx, RPKT_LEN, &Rssi);
-            if(RxRslt == retvOk) {
-                Printf("Ch=%u; Rssi=%d\r", ID2RCHNL(i), Rssi);
-//                if(PktRx.DWord == 0xCA115EA1) RxTable.AddId(i);
-            }
-        } // for i
-        TryToSleep(720);
+        msg.ID = evtIdRadioNoone;
+        MaxRssi = RSSI_DUMMY;
+        for(int N=0; N<4; N++) { // Iterate channels N times
+            // Iterate channels
+            for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
+                CC.SetChannel(ID2RCHNL(i));
+                CC.Recalibrate();
+                uint8_t RxRslt = CC.Receive(45, &PktRx, RPKT_LEN, &Rssi);   // Double pkt duration + TX sleep time
+                if(RxRslt == retvOk) {
+                    Printf("Ch=%u; Rssi=%d; Type=%u\r", ID2RCHNL(i), Rssi, PktRx.Type);
+                    if(PktRx.DWord == THE_WORD) {
+                        if(PktRx.Type == appmButton) {
+                            msg.ID = evtIdRadioButton;
+                            chThdSleepMilliseconds(999);
+                            goto CycleEnd;
+                        }
+                        else if(PktRx.Type == appmCrystal) {
+                            if(Rssi > -72) { // Ignore weak signals
+                                if(Rssi > MaxRssi) MaxRssi = Rssi;
+                            }
+                        }
+                    } // if the word
+                } // if rslt
+            } // for i
+            TryToSleep(270);
+        } // For N
+        CycleEnd:
+        // Check who is near
+        if(msg.ID != evtIdRadioButton and MaxRssi != RSSI_DUMMY) {
+            msg.ID = (MaxRssi > -60)? evtIdRadioHiPwr : evtIdRadioLowPwr;
+        }
+        EvtQMain.SendNowOrExit(msg);
     } // while
 }
 #endif // task

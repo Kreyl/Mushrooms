@@ -44,8 +44,7 @@ int main(void) {
     CommonEffectsInit();
 
     if(Radio.Init() == retvOk) {
-//        Leds.SeqAllTogetherStartOrRestart(lsqIdle);
-        Leds.SeqAllTogetherStartOrRestart(lsqButton);
+        Leds.SeqAllTogetherStartOrRestart(lsqIdle);
     }
     else {
         Leds.SeqAllTogetherStartOrRestart(lsqFailure);
