@@ -65,7 +65,7 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdRadioNoone:  Leds.SeqAllTogetherStartOrRestart (lsqIdle); break;
+            case evtIdRadioNoone:  Leds.SeqAllTogetherStartOrContinue(lsqIdle); break;
             case evtIdRadioButton: Leds.SeqAllTogetherStartOrContinue(lsqButton); break;
             case evtIdRadioLowPwr: Leds.SeqAllTogetherStartOrContinue(lsqLowPower); break;
             case evtIdRadioHiPwr:  Leds.SeqAllTogetherStartOrContinue(lsqHiPower); break;
