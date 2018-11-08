@@ -62,7 +62,7 @@ int main(void) {
     if(Clr.R > 255) Clr.R = 255;
     if(Clr.G > 255) Clr.G = 255;
     if(Clr.B > 255) Clr.B = 255;
-    if(Clr.Lum > 100) Clr.Lum = 100;
+    if(Clr.Brt > 100) Clr.Brt = 100;
     Clr.Print();
     ClrHsv.FromRGB(Clr);
 
@@ -141,16 +141,16 @@ void ITask() {
                 break;
 
             case evtIdTimeToSave:
-                Flash::Save((uint32_t*)&hsv, sizeof(ColorHSV_t));
-                EffAllTogetherNow.SetupAndStart(clBlack);
+                Flash::Save((uint32_t*)&ClrHsv, sizeof(ColorHSV_t));
+                Leds.AllTogetherNow(clBlack);
                 chThdSleepMilliseconds(153);
-                EffAllTogetherNow.SetupAndStart(hsv.ToRGB());
+                Leds.AllTogetherNow(ClrHsv.ToRGB());
                 break;
 
             case evtIdRadioCmd: {
                 Color_t Clr;
                 Clr.DWord32 = Msg.Value;
-                EffOneByOne.SetupAndStart(Clr, 360);
+                Leds.OneByOne(Clr, 360);
             }
             break;
 
