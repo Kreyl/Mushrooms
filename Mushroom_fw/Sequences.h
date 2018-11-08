@@ -20,31 +20,13 @@ const LedRGBChunk_t lsqFailure[] = {
 };
 
 const LedRGBChunk_t lsqIdle[] = {
-        {csSetup, 720, {12, 12, 18}},
+        {csSetup, 720, clMagenta},
         {csEnd}
 };
 
 const LedRGBChunk_t lsqButton[] = {
-        {csSetup, 360, {255, 0, 0}},
-        {csSetup, 360, {153, 0, 0}},
-        {csSetup, 180, {220, 0, 0}},
-        {csSetup, 360, {180, 0, 0}},
-        {csSetup, 300, {240, 0, 0}},
-        {csSetup, 300, {153, 0, 0}},
-        {csSetup, 360, {255, 0, 0}},
-        {csSetup, 180, {220, 0, 0}},
-        {csSetup, 153, {240, 0, 0}},
-        {csSetup, 180, {255, 0, 0}},
-        {csSetup, 120, {153, 0, 0}},
-        {csSetup, 153, {240, 0, 0}},
-        {csSetup, 360, {153, 0, 0}},
-        {csSetup, 180, {220, 0, 0}},
-        {csSetup, 153, {240, 0, 0}},
-        {csSetup, 360, {255, 0, 0}},
-        {csSetup, 360, {240, 0, 0}},
-        {csSetup, 180, {153, 0, 0}},
-        {csSetup, 120, {220, 0, 0}},
-        {csGoto, 0}
+        {csSetup, 720, clYellow},
+        {csEnd}
 };
 
 const LedRGBChunk_t lsqLowPower[] = {
