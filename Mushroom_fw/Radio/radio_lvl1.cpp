@@ -45,21 +45,19 @@ void rLevel1_t::TryToSleep(uint32_t SleepDuration) {
     chThdSleepMilliseconds(SleepDuration);
 }
 
+#define RSSI_DUMMY  (-117) // Some lowest value not possible
+
 __noreturn
 void rLevel1_t::ITask() {
     while(true) {
-        // Iterate channels
-        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
-            CC.SetChannel(ID2RCHNL(i));
-//            Printf("%u\r", i);
-            CC.Recalibrate();
-            uint8_t RxRslt = CC.Receive(27, &PktRx, RPKT_LEN, &Rssi);
-            if(RxRslt == retvOk) {
-//                Printf("Ch=%u; Rssi=%d\r", ID2RCHNL(i), Rssi);
-                if(PktRx.TheWord == 0xCA115EA1) RxTable.AddId(i);
-            }
-        } // for i
-        TryToSleep(720);
+        CC.SetChannel(7);
+        CC.Recalibrate();
+        uint8_t RxRslt = CC.Receive(45, &PktRx, RPKT_LEN, &Rssi);   // Double pkt duration + TX sleep time
+        if(RxRslt == retvOk) {
+            Printf("Rssi=%d\r", Rssi);
+            EvtQMain.SendNowOrExit(EvtMsg_t(evtIdRadioCmd, PktRx.Clr.DWord32));
+        } // if rslt
+        TryToSleep(360);
     } // while
 }
 #endif // task

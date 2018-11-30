@@ -35,8 +35,8 @@ ColorHSV_t ClrHsv;
 TmrKL_t TmrSave {MS2ST(3600), evtIdTimeToSave, tktOneShot};
 
 TmrKL_t TmrEverySecond {MS2ST(999), evtIdEverySecond, tktPeriodic};
-static uint32_t AppearTimeout = 0;
-static uint32_t TableCheckTimeout = CHECK_PERIOD_S;
+//static uint32_t AppearTimeout = 0;
+//static uint32_t TableCheckTimeout = CHECK_PERIOD_S;
 #endif
 
 int main(void) {
@@ -68,8 +68,8 @@ int main(void) {
 
     if(Radio.Init() == retvOk) {
         Leds.AllTogetherNow(Clr);
-        chThdSleepMilliseconds(999);
-        Leds.AllTogetherNow(clBlack);
+//        chThdSleepMilliseconds(999);
+//        Leds.AllTogetherNow(clBlack);
     }
     else {
         for(int i=0; i<4; i++) {
@@ -99,60 +99,61 @@ void ITask() {
                 ((Shell_t*)Msg.Ptr)->SignalCmdProcessed();
                 break;
 
-            case evtIdEverySecond:
-//                Printf("Second\r");
-                if(AppearTimeout > 0) {
-                    AppearTimeout--;
-                    if(AppearTimeout == 0) Leds.OneByOne(clBlack, 720);
-                }
+//            case evtIdEverySecond:
+////                Printf("Second\r");
+////                if(AppearTimeout > 0) {
+////                    AppearTimeout--;
+////                    if(AppearTimeout == 0) Leds.OneByOne(clBlack, 720);
+////                }
+//
+//                if(TableCheckTimeout > 0) {
+//                    TableCheckTimeout--;
+//                    if(TableCheckTimeout == 0) {
+//                        TableCheckTimeout = CHECK_PERIOD_S;
+//                        // Check table
+////                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
+//                        if(Radio.RxTable.GetCount() > 0) {
+////                            AppearTimeout = APPEAR_DURATION;
+//                            Leds.OneByOne(Clr, 720);
+//                            Radio.RxTable.Clear();
+//                        }
+//                    }
+//                }
+//                break;
 
-                if(TableCheckTimeout > 0) {
-                    TableCheckTimeout--;
-                    if(TableCheckTimeout == 0) {
-                        TableCheckTimeout = CHECK_PERIOD_S;
-                        // Check table
-//                        Printf("TblCnt: %u\r", Radio.RxTable.GetCount());
-                        if(Radio.RxTable.GetCount() > 0) {
-                            AppearTimeout = APPEAR_DURATION;
-                            Leds.OneByOne(Clr, 720);
-                            Radio.RxTable.Clear();
-                        }
-                    }
-                }
-                break;
-
-            case evtIdButtons:
-                AppearTimeout = APPEAR_DURATION;
-//                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
-                if(Msg.BtnEvtInfo.BtnID == 0) {
-                    if(ClrHsv.H < 360) ClrHsv.H++;
-                    else ClrHsv.H = 0;
-                }
-                else if(Msg.BtnEvtInfo.BtnID == 1) {
-                    if(ClrHsv.H > 0) ClrHsv.H--;
-                    else ClrHsv.H = 360;
-                }
-//                Printf("HSV %u; ", hsv.H);
-//                hsv.ToRGB().Print();
-                Leds.AllTogetherNow(ClrHsv.ToRGB());
-                // Prepare to save
-                TmrSave.StartOrRestart();
-
-                break;
+//            case evtIdButtons:
+//                AppearTimeout = APPEAR_DURATION;
+////                Printf("Btn %u\r", Msg.BtnEvtInfo.BtnID);
+//                if(Msg.BtnEvtInfo.BtnID == 0) {
+//                    if(ClrHsv.H < 360) ClrHsv.H++;
+//                    else ClrHsv.H = 0;
+//                }
+//                else if(Msg.BtnEvtInfo.BtnID == 1) {
+//                    if(ClrHsv.H > 0) ClrHsv.H--;
+//                    else ClrHsv.H = 360;
+//                }
+////                Printf("HSV %u; ", hsv.H);
+////                hsv.ToRGB().Print();
+//                Leds.AllTogetherNow(ClrHsv.ToRGB());
+//                // Prepare to save
+//                TmrSave.StartOrRestart();
+//
+//                break;
 
             case evtIdTimeToSave:
                 Flash::Save((uint32_t*)&ClrHsv, sizeof(ColorHSV_t));
-                Leds.AllTogetherNow(clBlack);
-                chThdSleepMilliseconds(153);
-                Leds.AllTogetherNow(ClrHsv.ToRGB());
+//                Leds.AllTogetherNow(clBlack);
+//                chThdSleepMilliseconds(153);
+//                Leds.AllTogetherNow(ClrHsv.ToRGB());
                 break;
 
-            case evtIdRadioCmd: {
-                Color_t Clr;
-                Clr.DWord32 = Msg.Value;
-                Leds.OneByOne(Clr, 360);
-            }
-            break;
+            case evtIdRadioCmd:
+                if(Clr.DWord32 != (uint32_t)Msg.Value) {
+                    Clr.DWord32 = (uint32_t)Msg.Value;
+                    Leds.OneByOne(Clr, 360);
+                    TmrSave.StartOrRestart();
+                }
+                break;
 
             default: break;
         } // switch
