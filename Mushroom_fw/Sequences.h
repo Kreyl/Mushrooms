@@ -10,53 +10,34 @@
 #include "ChunkTypes.h"
 
 #if 1 // ============================ LED RGB ==================================
+#define LOW_BRTNESS     4
+//const LedRGBChunk_t lsqModeTxStart[] = {
+//        {csSetup, 0, clYellow},
+//        {csWait, 207},
+//        {csSetup, 0, clBlack},
+//        {csWait, 207},
+//        {csSetup, 0, clYellow},
+//        {csWait, 207},
+//        {csSetup, 0, clBlack},
+//        {csEnd}
+//};
+
+
+
 const LedRGBChunk_t lsqFailure[] = {
         {csSetup, 0, clRed},
         {csWait, 99},
         {csSetup, 0, clBlack},
         {csWait, 99},
-        {csRepeat, 3},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
         {csEnd}
 };
-
-const LedRGBChunk_t lsqIdle[] = {
-        {csSetup, 720, clMagenta},
-        {csEnd}
-};
-
-const LedRGBChunk_t lsqButton[] = {
-        {csSetup, 720, clYellow},
-        {csEnd}
-};
-
-const LedRGBChunk_t lsqLowPower[] = {
-        {csSetup, 360, {90, 0, 0}},
-        {csEnd}
-};
-
-const LedRGBChunk_t lsqHiPower[] = {
-        {csSetup, 180, {255, 0, 0}},
-        {csSetup, 180, {200, 0, 0}},
-        {csSetup, 90,  {108, 0, 0}},
-        {csSetup, 180, {220, 0, 0}},
-        {csSetup, 153, {153, 0, 0}},
-        {csSetup, 153, {90, 0, 0}},
-        {csSetup, 180, {255, 0, 0}},
-        {csSetup, 90,  {153, 0, 0}},
-        {csSetup, 153, {220, 0, 0}},
-        {csSetup, 90,  {90, 0, 0}},
-        {csSetup, 63,  {153, 0, 0}},
-        {csSetup, 153, {220, 0, 0}},
-        {csSetup, 180, {153, 0, 0}},
-        {csSetup, 90,  {255, 0, 0}},
-        {csSetup, 153, {108, 0, 0}},
-        {csSetup, 180, {200, 0, 0}},
-        {csSetup, 180, {153, 0, 0}},
-        {csSetup, 90,  {200, 0, 0}},
-        {csSetup, 63,  {108, 0, 0}},
-        {csGoto, 0}
-};
-
 
 // ==== Pill ====
 //const LedRGBChunk_t lsqPillCure[] = {
@@ -194,7 +175,7 @@ const BeepChunk_t bsqBeepPillBad[] = {
 #if 1 // ============================== Vibro ==================================
 #define VIBRO_VOLUME    100  // 1 to 100
 
-#define VIBRO_SHORT_MS          99
+#define VIBRO_SHORT_MS          90
 #define VIBRO_REPEAT_PERIOD     1008
 
 const BaseChunk_t vsqBrr[] = {

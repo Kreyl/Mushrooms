@@ -13,14 +13,10 @@ enum EvtMsgId_t {
     // Pretending to eternity
     evtIdShellCmd,
     evtIdEverySecond,
+    evtIdAdcRslt,
 
-    evtIdTimeToSave,
-    evtIdRadioCmd,
+    // Not eternal
     evtIdButtons,
-
-    // Radio
-    evtIdRadioNoone,
-    evtIdRadioButton,
-    evtIdRadioLowPwr,
-    evtIdRadioHiPwr,
+    evtIdRadioCmd,
+    evtIdCheckRxTable,
 };

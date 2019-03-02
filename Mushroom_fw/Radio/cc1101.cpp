@@ -12,7 +12,7 @@
 
 uint8_t cc1101_t::Init() {
     // ==== GPIO ====
-#if defined STM32L1XX || defined STM32F4XX || defined STM32L4XX || defined STM32F2XX
+#if defined STM32L1XX || defined STM32F4XX || defined STM32L4XX
     AlterFunc_t CC_AF;
     if(ISpi.PSpi == SPI1 or ISpi.PSpi == SPI2) CC_AF = AF5;
     else CC_AF = AF6;
@@ -28,7 +28,7 @@ uint8_t cc1101_t::Init() {
     // ==== SPI ====
     // MSB first, master, ClkLowIdle, FirstEdge, Baudrate no more than 6.5MHz
     uint32_t div;
-#if defined STM32L1XX || defined STM32F4XX || defined STM32L4XX || defined STM32F2XX
+#if defined STM32L1XX || defined STM32F4XX || defined STM32L4XX
     if(ISpi.PSpi == SPI1) div = Clk.APB2FreqHz / CC_MAX_BAUDRATE_HZ;
     else div = Clk.APB1FreqHz / CC_MAX_BAUDRATE_HZ;
 #elif defined STM32F030 || defined STM32F0
@@ -133,12 +133,12 @@ void cc1101_t::SetChannel(uint8_t AChannel) {
 //    //Uart.Printf("\r");
 //}
 
-void cc1101_t::Transmit(void *Ptr, uint8_t Len) {
-    ICallback = nullptr;
+void cc1101_t::Transmit(void *Ptr) {
 //     WaitUntilChannelIsBusy();   // If this is not done, time after time FIFO is destroyed
 //    while(IState != CC_STB_IDLE) EnterIdle();
+    //Recalibrate();
     EnterTX();  // Start transmission of preamble while writing FIFO
-    WriteTX((uint8_t*)Ptr, Len);
+    WriteTX((uint8_t*)Ptr, IPktSz);
     // Enter TX and wait IRQ
     chSysLock();
     chThdSuspendS(&ThdRef); // Wait IRQ
@@ -146,7 +146,8 @@ void cc1101_t::Transmit(void *Ptr, uint8_t Len) {
 }
 
 // Enter RX mode and wait reception for Timeout_ms.
-uint8_t cc1101_t::Receive(uint32_t Timeout_ms, void *Ptr, uint8_t Len, int8_t *PRssi) {
+uint8_t cc1101_t::Receive(uint32_t Timeout_ms, void *Ptr, int8_t *PRssi) {
+//    Recalibrate();
     FlushRxFIFO();
     chSysLock();
     EnterRX();
@@ -157,7 +158,7 @@ uint8_t cc1101_t::Receive(uint32_t Timeout_ms, void *Ptr, uint8_t Len, int8_t *P
         EnterIdle();            // Get out of RX mode
         return retvTimeout;
     }
-    else return ReadFIFO(Ptr, PRssi, Len);
+    else return ReadFIFO(Ptr, PRssi);
     return retvOk;
 }
 
@@ -167,17 +168,6 @@ int8_t cc1101_t::RSSI_dBm(uint8_t ARawRSSI) {
     if (RSSI >= 128) RSSI -= 256;
     RSSI = (RSSI / 2) - 74;    // now it is in dBm
     return RSSI;
-}
-
-void cc1101_t::ReceiveAsync(ftVoidVoid Callback) {
-    FlushRxFIFO();
-    ICallback = Callback;
-    EnterRX();
-}
-void cc1101_t::TransmitAsync(void *Ptr, uint8_t Len, ftVoidVoid Callback) {
-    EnterTX(); // Start transmission of preamble
-    WriteTX((uint8_t*)Ptr, Len);
-    ICallback = Callback;
 }
 #endif
 
@@ -223,33 +213,34 @@ uint8_t cc1101_t::WriteTX(uint8_t* Ptr, uint8_t Length) {
         return retvFail;
     }
     ISpi.ReadWriteByte(CC_FIFO|CC_WRITE_FLAG|CC_BURST_FLAG);    // Address with write & burst flags
-//    Printf("TX: ");
+    //Uart.Printf("TX: ");
     for(uint8_t i=0; i<Length; i++) {
         uint8_t b = *Ptr++;
         ISpi.ReadWriteByte(b);  // Write bytes
-//        Printf("%X ", b);
+      //  Uart.Printf("%X ", b);
     }
     CsHi();    // End transmission
-//    Printf("\r");
+    //Uart.Printf("\r");
     return retvOk;
 }
 
-uint8_t cc1101_t::ReadFIFO(void *Ptr, int8_t *PRssi, uint8_t Len) {
+uint8_t cc1101_t::ReadFIFO(void *Ptr, int8_t *PRssi) {
     uint8_t b, *p = (uint8_t*)Ptr;
      // Check if received successfully
      if(ReadRegister(CC_PKTSTATUS, &b) != retvOk) return retvFail;
-//     Printf("St: %X  ", b);
+     //    Uart.Printf("St: %X  ", b);
      if(b & 0x80) {  // CRC OK
          // Read FIFO
-         CsLo();                    // Start transmission
+         CsLo();                // Start transmission
          if(BusyWait() != retvOk) { // Wait for chip to become ready
              CsHi();
              return retvFail;
          }
          ISpi.ReadWriteByte(CC_FIFO|CC_READ_FLAG|CC_BURST_FLAG); // Address with read & burst flags
-         for(uint8_t i=0; i<Len; i++) { // Read bytes
+         for(uint8_t i=0; i<IPktSz; i++) { // Read bytes
              b = ISpi.ReadWriteByte(0);
              *p++ = b;
+             // Uart.Printf(" %X", b);
          }
          // Receive two additional info bytes
          b = ISpi.ReadWriteByte(0); // RSSI

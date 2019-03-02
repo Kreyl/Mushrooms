@@ -1,15 +1,16 @@
 /*
  * main.h
  *
- *  Created on: 19 июн. 2018 г.
+ *  Created on: 6 марта 2018 г.
  *      Author: Kreyl
  */
 
 #pragma once
 
+#include "color.h"
 
-#define ID_MIN          1
-#define ID_MAX          20
+#define ID_MIN                  1
+#define ID_MAX                  16
+#define ID_DEFAULT              ID_MIN
 
-enum AppMode_t : uint8_t {appmCrystal = 0, appmKey = 1, appmButton = 2};
-
+extern Color_t TheColor;
