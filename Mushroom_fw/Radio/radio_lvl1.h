@@ -96,7 +96,7 @@ struct RMsg_t {
 #define MIN_SLEEP_DURATION_MS   18
 #endif
 
-#if 1 // ============================= RX Table ================================
+#if 0 // ============================= RX Table ================================
 #define RXTABLE_SZ              4
 #define RXT_PKT_REQUIRED        FALSE
 class RxTable_t {
@@ -170,7 +170,7 @@ public:
 //    rPkt_t PktRx, PktTx;
 //    bool MustTx = false;
     int8_t Rssi;
-    RxTable_t RxTable;
+//    RxTable_t RxTable;
     uint8_t Init();
     // Inner use
     void TryToSleep(uint32_t SleepDuration);

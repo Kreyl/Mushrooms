@@ -11,6 +11,7 @@
 
 #define ID_MIN                  1
 #define ID_MAX                  16
+#define ID_CNT                  (ID_MAX-ID_MIN+1)
 #define ID_DEFAULT              ID_MIN
 
-extern Color_t TheColor;
+extern Color_t RxTable[ID_CNT];

@@ -15,15 +15,27 @@ extern CmdUart_t Uart;
 static void ITask();
 static void OnCmd(Shell_t *PShell);
 
+Color_t RxTable[ID_CNT];
+void ProcessTable();
+
 // ==== Periphery ====
 LedRGB_t Led1 { LED1_R_PIN, LED1_G_PIN, LED1_B_PIN };
 LedRGB_t Led2 { LED2_R_PIN, LED2_G_PIN, LED2_B_PIN };
 LedRGB_t Led3 { LED3_R_PIN, LED3_G_PIN, LED3_B_PIN };
+#if LEDS_CNT == 3
+LedRGB_t* Leds[LEDS_CNT] = {&Led1, &Led2, &Led3};
+#elif LEDS_CNT == 4
 LedRGB_t Led4 { LED4_R_PIN, LED4_G_PIN, LED4_B_PIN };
 LedRGB_t* Leds[LEDS_CNT] = {&Led1, &Led2, &Led3, &Led4};
+#endif
+
+LedRGBChunk_t lsqLit[] = {
+        {csSetup, 450, clRed},
+        {csEnd}
+};
 
 // ==== Timers ====
-static TmrKL_t TmrEverySecond {MS2ST(1000), evtIdEverySecond, tktPeriodic};
+//static TmrKL_t TmrEverySecond {MS2ST(1000), evtIdEverySecond, tktPeriodic};
 #endif
 
 int main(void) {
@@ -45,11 +57,13 @@ int main(void) {
 
     for(LedRGB_t* Led: Leds) {
         Led->Init();
-        Led->SetColor({64, 128, 200});
+        Led->StartOrRestart(lsqStart);
+        chThdSleepMilliseconds(540);
     }
 
+
     // ==== Time and timers ====
-    TmrEverySecond.StartOrRestart();
+//    TmrEverySecond.StartOrRestart();
 
     // ==== Radio ====
 //    if(
@@ -69,13 +83,14 @@ void ITask() {
     while(true) {
         EvtMsg_t Msg = EvtQMain.Fetch(TIME_INFINITE);
         switch(Msg.ID) {
-            case evtIdEverySecond:
+//            case evtIdEverySecond:
 //                Printf("t\r");
-                break;
-
-            case evtIdButtons:
+//                break;
+//            case evtIdButtons:
 //                Printf("Btn\r");
-                break;
+//                break;
+
+            case evtIdCheckRxTable: ProcessTable(); break;
 
             case evtIdShellCmd:
                 OnCmd((Shell_t*)Msg.Ptr);
@@ -85,6 +100,40 @@ void ITask() {
         } // Switch
     } // while true
 } // ITask()
+
+void ProcessTable() {
+    // Calc summ of what we received
+    uint32_t R=0, G=0, B=0;
+    for(Color_t& RxClr : RxTable) {
+        R += RxClr.R;
+        G += RxClr.G;
+        B += RxClr.B;
+        RxClr.DWord32 = 0; // Clean table
+    } // for
+    // Select what is maximum
+    uint32_t max = (R > G)? R : G;
+    if(max < B) max = B;
+    // Normalize if needed
+//    Printf("RGB1: %u, %u, %u;  ", R, G, B);
+    if(max > 255) {
+        R = (R * 255) / max;
+        G = (G * 255) / max;
+        B = (B * 255) / max;
+    }
+    // Correct color
+    G = (G * 60) / 128;
+    B = (B * 30) / 128;
+//    Printf("RGB2: %u, %u, %u;   ", R, G, B);
+    Color_t SummClr(R, G, B);
+//    SummClr.Print();
+//    PrintfEOL();
+    // Lit them all
+    lsqLit[0].Color = SummClr;
+    for(LedRGB_t* Led: Leds) {
+        Led->StartOrRestart(lsqLit);
+        chThdSleepMilliseconds(540);
+    }
+}
 
 #if UART_RX_ENABLED // ================= Command processing ====================
 void OnCmd(Shell_t *PShell) {

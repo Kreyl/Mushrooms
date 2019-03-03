@@ -397,7 +397,7 @@ struct ColorHSV_t {
 #endif
 
 #if 1 // ============================= Colors ==================================
-#define clBlack     ((Color_t){0,   0,   0})
+#define clBlack     ((Color_t){0,   0,   0, 0})
 #define clRed       ((Color_t){255, 0,   0})
 #define clGreen     ((Color_t){0,   255, 0})
 #define clBlue      ((Color_t){0,   0,   255})

@@ -32,7 +32,7 @@ rLevel1_t Radio;
 rPkt_t Pkt;
 
 #if 1 // ================================ Task =================================
-static THD_WORKING_AREA(warLvl1Thread, 256);
+static THD_WORKING_AREA(warLvl1Thread, 512);
 __noreturn
 static void rLvl1Thread(void *arg) {
     chRegSetThreadName("rLvl1");
@@ -63,17 +63,22 @@ static void rLvl1Thread(void *arg) {
 //}
 
 void rLevel1_t::TaskReceiverManyByChannel() {
-    // Iterate channels
-    for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
-        CC.SetChannel(ID2RCHNL(i));
-        CC.Recalibrate();
-        uint8_t RxRslt = CC.Receive(27, &Pkt, &Rssi);   // Double pkt duration
-        if(RxRslt == retvOk) {
-            Printf("Ch=%u; Rssi=%d\r", i, Rssi);
-//            App.SignalEvt(EVT_RX);
-//            TryToSleep(999);
-        }
-    } // for i
+    for(int32_t N=0; N<4; N++) {
+        // Iterate channels
+        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
+            CC.SetChannel(ID2RCHNL(i));
+            CC.Recalibrate();
+            uint8_t RxRslt = CC.Receive(27, &Pkt, &Rssi);   // Double pkt duration
+            if(RxRslt == retvOk) {
+//                Printf("Ch=%u; Rssi=%d\r", i, Rssi);
+                if(Pkt.DWord1 == Pkt.DWord2) { // Additional check
+                    RxTable[i-ID_MIN].DWord32 = Pkt.DWord1;
+                }
+            }
+        } // for i
+        TryToSleep(270);
+    }
+    EvtQMain.SendNowOrExit(EvtMsg_t(evtIdCheckRxTable));
     TryToSleep(270);
 }
 
@@ -189,7 +194,7 @@ uint8_t rLevel1_t::Init() {
         CC.SetChannel(0);
 //        CC.EnterPwrDown();
         // Thread
-        chThdCreateStatic(warLvl1Thread, sizeof(warLvl1Thread), HIGHPRIO, (tfunc_t)rLvl1Thread, NULL);
+        chThdCreateStatic(warLvl1Thread, sizeof(warLvl1Thread), NORMALPRIO, (tfunc_t)rLvl1Thread, NULL);
         return retvOk;
     }
     else return retvFail;

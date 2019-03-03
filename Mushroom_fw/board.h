@@ -45,7 +45,7 @@
 #define LED4_G_PIN      { GPIOB, 8, TIM4, 3, invNotInverted, omPushPull, 255 }
 #define LED4_B_PIN      { GPIOB, 9, TIM4, 4, invNotInverted, omPushPull, 255 }
 
-#define LEDS_CNT        4
+#define LEDS_CNT        3
 
 // Button
 #define BTN_PIN         GPIOA, 0, pudPullDown

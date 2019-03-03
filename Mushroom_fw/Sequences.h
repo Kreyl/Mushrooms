@@ -11,18 +11,13 @@
 
 #if 1 // ============================ LED RGB ==================================
 #define LOW_BRTNESS     4
-//const LedRGBChunk_t lsqModeTxStart[] = {
-//        {csSetup, 0, clYellow},
-//        {csWait, 207},
-//        {csSetup, 0, clBlack},
-//        {csWait, 207},
-//        {csSetup, 0, clYellow},
-//        {csWait, 207},
-//        {csSetup, 0, clBlack},
-//        {csEnd}
-//};
-
-
+const LedRGBChunk_t lsqStart[] = {
+        {csSetup, 207, clRed},
+        {csSetup, 207, clGreen},
+        {csSetup, 207, clBlue},
+        {csSetup, 207, clBlack},
+        {csEnd}
+};
 
 const LedRGBChunk_t lsqFailure[] = {
         {csSetup, 0, clRed},
