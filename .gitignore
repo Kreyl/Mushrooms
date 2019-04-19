@@ -3,3 +3,4 @@ Mushroom_fw/Mushroom/.settings/language.settings.xml
 *.dsn
 *.kicad_pcb-bak
 Mushroom_fw030/.settings/language.settings.xml
+*.bak
