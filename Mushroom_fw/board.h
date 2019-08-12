@@ -4,7 +4,7 @@
 
 // ==== General ====
 #define BOARD_NAME          "Mushroom5"
-#define APP_NAME            "V5"
+#define APP_NAME            "Simple"
 
 // ==== High-level peripery control ====
 #define BUTTONS_ENABLED     FALSE
@@ -29,26 +29,28 @@
 #define UART_RX_PIN     10
 
 // LEDs
-#define LED1_R_PIN      { GPIOA, 1, TIM2, 2, invNotInverted, omPushPull, 255 }
-#define LED1_G_PIN      { GPIOA, 2, TIM9, 1, invNotInverted, omPushPull, 255 }
-#define LED1_B_PIN      { GPIOA, 3, TIM9, 2, invNotInverted, omPushPull, 255 }
+#define LED1_B_PIN      { GPIOA, 1, TIM2, 2, invNotInverted, omPushPull, 255 }
+#define LED1_R_PIN      { GPIOA, 2, TIM9, 1, invNotInverted, omPushPull, 255 }
+#define LED1_G_PIN      { GPIOA, 3, TIM9, 2, invNotInverted, omPushPull, 255 }
 
-#define LED2_R_PIN      { GPIOA, 5, TIM2, 1, invNotInverted, omPushPull, 255 }
-#define LED2_G_PIN      { GPIOA, 6, TIM3, 1, invNotInverted, omPushPull, 255 }
-#define LED2_B_PIN      { GPIOA, 7, TIM3, 2, invNotInverted, omPushPull, 255 }
+#define LED2_B_PIN      { GPIOB, 0, TIM3, 3, invNotInverted, omPushPull, 255 }
+#define LED2_R_PIN      { GPIOB, 1, TIM3, 4, invNotInverted, omPushPull, 255 }
+#define LED2_G_PIN      { GPIOB, 6, TIM4, 1, invNotInverted, omPushPull, 255 }
 
-#define LED3_R_PIN      { GPIOB, 0, TIM3, 3, invNotInverted, omPushPull, 255 }
-#define LED3_G_PIN      { GPIOB, 1, TIM3, 4, invNotInverted, omPushPull, 255 }
-#define LED3_B_PIN      { GPIOB, 6, TIM4, 1, invNotInverted, omPushPull, 255 }
+#define LED3_B_PIN      { GPIOA, 5, TIM2, 1, invNotInverted, omPushPull, 255 }
+#define LED3_R_PIN      { GPIOA, 6, TIM3, 1, invNotInverted, omPushPull, 255 }
+#define LED3_G_PIN      { GPIOA, 7, TIM3, 2, invNotInverted, omPushPull, 255 }
 
-#define LED4_R_PIN      { GPIOB, 7, TIM4, 2, invNotInverted, omPushPull, 255 }
-#define LED4_G_PIN      { GPIOB, 8, TIM4, 3, invNotInverted, omPushPull, 255 }
-#define LED4_B_PIN      { GPIOB, 9, TIM4, 4, invNotInverted, omPushPull, 255 }
+#define LED4_B_PIN      { GPIOB, 7, TIM4, 2, invNotInverted, omPushPull, 255 }
+#define LED4_R_PIN      { GPIOB, 8, TIM4, 3, invNotInverted, omPushPull, 255 }
+#define LED4_G_PIN      { GPIOB, 9, TIM4, 4, invNotInverted, omPushPull, 255 }
 
 #define LEDS_CNT        3
 
 // Button
-#define BTN_PIN         GPIOA, 0, pudPullDown
+#define BTN1_PIN        GPIOA, 0, pudPullDown
+#define BTN2_PIN        GPIOC, 14, pudPullDown
+#define BTN3_PIN        GPIOC, 15, pudPullDown
 
 // Radio: SPI, PGpio, Sck, Miso, Mosi, Cs, Gdo0
 #define CC_Setup0       SPI2, GPIOB, 13,14,15, 5, 2

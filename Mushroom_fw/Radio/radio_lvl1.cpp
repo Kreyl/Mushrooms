@@ -37,7 +37,7 @@ __noreturn
 static void rLvl1Thread(void *arg) {
     chRegSetThreadName("rLvl1");
     while(true) {
-        Radio.TaskReceiverManyByChannel();
+        chThdSleepMilliseconds(999);
     } // while true
 }
 
@@ -62,25 +62,25 @@ static void rLvl1Thread(void *arg) {
 //    EvtQMain.SendNowOrExit(msg);
 //}
 
-void rLevel1_t::TaskReceiverManyByChannel() {
-    for(int32_t N=0; N<4; N++) {
-        // Iterate channels
-        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
-            CC.SetChannel(ID2RCHNL(i));
-            CC.Recalibrate();
-            uint8_t RxRslt = CC.Receive(27, &Pkt, &Rssi);   // Double pkt duration
-            if(RxRslt == retvOk) {
-//                Printf("Ch=%u; Rssi=%d\r", i, Rssi);
-                if(Pkt.DWord1 == Pkt.DWord2) { // Additional check
-                    RxTable[i-ID_MIN].DWord32 = Pkt.DWord1;
-                }
-            }
-        } // for i
-        TryToSleep(270);
-    }
-    EvtQMain.SendNowOrExit(EvtMsg_t(evtIdCheckRxTable));
-    TryToSleep(270);
-}
+//void rLevel1_t::TaskReceiverManyByChannel() {
+//    for(int32_t N=0; N<4; N++) {
+//        // Iterate channels
+//        for(int32_t i = ID_MIN; i <= ID_MAX; i++) {
+//            CC.SetChannel(ID2RCHNL(i));
+//            CC.Recalibrate();
+//            uint8_t RxRslt = CC.Receive(27, &Pkt, &Rssi);   // Double pkt duration
+//            if(RxRslt == retvOk) {
+////                Printf("Ch=%u; Rssi=%d\r", i, Rssi);
+//                if(Pkt.DWord1 == Pkt.DWord2) { // Additional check
+//                    RxTable[i-ID_MIN].DWord32 = Pkt.DWord1;
+//                }
+//            }
+//        } // for i
+//        TryToSleep(270);
+//    }
+//    EvtQMain.SendNowOrExit(EvtMsg_t(evtIdCheckRxTable));
+//    TryToSleep(270);
+//}
 
 //void rLevel1_t::TaskFeelEachOtherSingle() {
 //    int8_t TopRssi = -126;
