@@ -1,7 +1,7 @@
 /*
  * Sequences.h
  *
- *  Created on: 09 ÿíâ. 2015 ã.
+ *  Created on: 09 ï¿½ï¿½ï¿½. 2015 ï¿½.
  *      Author: Kreyl
  */
 
@@ -9,15 +9,192 @@
 
 #include "ChunkTypes.h"
 
-#if 1 // ============================ LED RGB ==================================
-#define LOW_BRTNESS     4
-const LedRGBChunk_t lsqStart[] = {
-        {csSetup, 207, clRed},
-        {csSetup, 207, clGreen},
-        {csSetup, 207, clBlue},
-        {csSetup, 207, clBlack},
+#if 0 // ============================ LED blink ================================
+const LedChunk_t lsqIdle[] = {
+        {csSetup, 0, clBlack},
         {csEnd}
 };
+
+const LedChunk_t lsqError[] = {
+        {csSetup, 0, clRed},
+        {csWait, 4005},
+        {csSetup, 0, clBlack},
+        {csEnd}
+};
+
+// ======= Adding / removing IDs ========
+// ==== Access ====
+#define LSQ_ACCESS_ADD_CLR      clGreen
+#define LSQ_ACCESS_REMOVE_CLR   clRed
+const LedChunk_t lsqAddingAccessWaiting[] = {
+        {csSetup, 0, LSQ_ACCESS_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingAccessNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_ACCESS_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingAccessError[] = {
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, LSQ_ACCESS_ADD_CLR},
+        {csEnd}
+};
+
+const LedChunk_t lsqRemovingAccessWaiting[] = {
+        {csSetup, 0, LSQ_ACCESS_REMOVE_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqRemovingAccessNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_ACCESS_REMOVE_CLR},
+        {csEnd}
+};
+
+// ==== Adder ====
+#define LSQ_ADDER_ADD_CLR       clBlue
+#define LSQ_ADDER_REMOVE_CLR    clMagenta
+const LedChunk_t lsqAddingAdderWaiting[] = {
+        {csSetup, 0, LSQ_ADDER_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingAdderNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_ADDER_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingAdderError[] = {
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, LSQ_ADDER_ADD_CLR},
+        {csEnd}
+};
+
+const LedChunk_t lsqRemovingAdderWaiting[] = {
+        {csSetup, 0, LSQ_ADDER_REMOVE_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqRemovingAdderNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_ADDER_REMOVE_CLR},
+        {csEnd}
+};
+
+// ==== Remover ====
+#define LSQ_REMOVER_ADD_CLR     clCyan
+#define LSQ_REMOVER_REMOVE_CLR  clYellow
+const LedChunk_t lsqAddingRemoverWaiting[] = {
+        {csSetup, 0, LSQ_REMOVER_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingRemoverNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_REMOVER_ADD_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqAddingRemoverError[] = {
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, clRed},
+        {csWait, 99},
+        {csSetup, 0, clBlack},
+        {csWait, 99},
+        {csSetup, 0, LSQ_REMOVER_ADD_CLR},
+        {csEnd}
+};
+
+const LedChunk_t lsqRemovingRemoverWaiting[] = {
+        {csSetup, 0, LSQ_REMOVER_REMOVE_CLR},
+        {csEnd}
+};
+const LedChunk_t lsqRemovingRemoverNew[] = {
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, LSQ_REMOVER_REMOVE_CLR},
+        {csEnd}
+};
+
+// ==== Erase all ====
+const LedChunk_t lsqEraseAll[] = {
+        {csSetup, 0, clRed},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, clRed},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, clRed},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, clRed},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csEnd}
+};
+
+// General
+const LedChunk_t lsqBlinkGreen[] = {
+        {csSetup, 0, clGreen},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csEnd}
+};
+
+const LedChunk_t lsqBlinkGreenX2[] = {
+        {csSetup, 0, clGreen},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+        {csWait, 180},
+        {csSetup, 0, clGreen},
+        {csWait, 180},
+        {csSetup, 0, clBlack},
+//        {csWait, 999},
+//        {csGoto, 0}
+        {csEnd}
+};
+#endif
+
+#if 1 // ============================ LED RGB ==================================
+#define LOW_BRTNESS     4
+#define SHOWTIME        270
+#define PAUSETIME       720
+#define SHORTPAUSETIME  72
+
+
 
 const LedRGBChunk_t lsqFailure[] = {
         {csSetup, 0, clRed},
@@ -33,26 +210,6 @@ const LedRGBChunk_t lsqFailure[] = {
         {csSetup, 0, clBlack},
         {csEnd}
 };
-
-// ==== Pill ====
-//const LedRGBChunk_t lsqPillCure[] = {
-//        {csSetup, 0, clGreen},
-//        {csWait, 999},
-//        {csSetup, 0, clBlack},
-//        {csEnd},
-//};
-//const LedRGBChunk_t lsqPillPanacea[] = {
-//        {csSetup, 0, clWhite},
-//        {csWait, 999},
-//        {csSetup, 0, clBlack},
-//        {csEnd},
-//};
-//const LedRGBChunk_t lsqPillBad[] = {
-//        {csSetup, 0, clRed},
-//        {csWait, 999},
-//        {csSetup, 0, clBlack},
-//        {csEnd},
-//};
 
 #endif
 
@@ -78,7 +235,7 @@ const LedSmoothChunk_t lsqEnterIdle[] = {
 
 #endif
 
-#if 1 // ============================= Beeper ==================================
+#if 0 // ============================= Beeper ==================================
 #define BEEP_VOLUME     2   // Maximum 10
 
 #if 1 // ==== Notes ====
@@ -170,7 +327,7 @@ const BeepChunk_t bsqBeepPillBad[] = {
 #if 1 // ============================== Vibro ==================================
 #define VIBRO_VOLUME    100  // 1 to 100
 
-#define VIBRO_SHORT_MS          90
+#define VIBRO_SHORT_MS          99
 #define VIBRO_REPEAT_PERIOD     1008
 
 const BaseChunk_t vsqBrr[] = {
@@ -209,40 +366,33 @@ const BaseChunk_t vsqBrrBrrBrr[] = {
         {csEnd}
 };
 
-// ==== Health ====
-const BaseChunk_t vsqIll[] = {
-        {csSetup, VIBRO_VOLUME},
+const BaseChunk_t vsqAttack[] = {
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 99},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 99},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 99},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 99},
+        {csWait, 450},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 99},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 1008},
+        {csRepeat, 2},
         {csWait, 999},
-        {csSetup, 0},
-        {csWait, 3600},
-        {csSetup, VIBRO_VOLUME},
-        {csWait, VIBRO_SHORT_MS},
-        {csGoto, 2}
+        {csEnd}
 };
 
-const BaseChunk_t vsqDeath[] = {
-        {csSetup, VIBRO_VOLUME},
+const BaseChunk_t vsqRetreat[] = {
+        {csSetup, VIBRO_VOLUME}, {csWait, 360},
+        {csSetup, 0},            {csWait, 99},
+        {csSetup, VIBRO_VOLUME}, {csWait, 99},
+        {csSetup, 0},            {csWait, 720},
+        {csRepeat, 2},
         {csWait, 999},
-        {csSetup, 0},
-        {csWait, 4005},
-        {csSetup, VIBRO_VOLUME},
-        {csWait, VIBRO_SHORT_MS},
-        {csGoto, 2}
-};
-
-// Cataclysm
-const BaseChunk_t vsqCataclysm[] = {
-        {csSetup, VIBRO_VOLUME},
-        {csWait, 999},
-        {csSetup, 0},
-        {csWait, 999},
-        {csSetup, VIBRO_VOLUME},
-        {csWait, VIBRO_SHORT_MS},
-        {csSetup, 0},
-        {csWait, 99},
-        {csSetup, VIBRO_VOLUME},
-        {csWait, VIBRO_SHORT_MS},
-        {csGoto, 2}
+        {csEnd}
 };
 
 /*

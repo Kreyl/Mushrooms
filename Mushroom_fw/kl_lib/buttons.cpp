@@ -35,6 +35,11 @@ static bool IsCombo;
 static systime_t LongComboTimer;
 static bool IsLongCombo;
 #endif
+#if BTN_DOUBLE_CLICK
+static systime_t DoubleClickTimer;
+static bool IsWaitingSecondClick = false;
+static uint8_t FirstClickID = 0;
+#endif
 
 static void AddEvtToQueue(BtnEvtInfo_t &Evt);
 static void AddEvtToQueue(BtnEvt_t AType, uint8_t KeyIndx);
@@ -78,15 +83,26 @@ void ProcessButtons(PinSnsState_t *BtnState, uint32_t Len) {
             else IsCombo = false;
 #endif // combo
 
-#if BTN_SHORTPRESS // Single key pressed, no combo
-#if BTN_COMBO
-            if(!IsCombo)
-#endif // combo
-            {
-                AddEvtToQueue(beShortPress, i);  // Add single keypress
+#if BTN_DOUBLE_CLICK
+            // Check if same button pressed within timeframe
+            if(IsWaitingSecondClick and FirstClickID == i and chVTTimeElapsedSinceX(DoubleClickTimer) < (TIME_MS2I(BTN_DOUBLECLICK_DELAY_MS))) {
+                AddEvtToQueue(beDoubleClick, i);
+                IsWaitingSecondClick = false;
             }
-
+            else {
+                AddEvtToQueue(beShortPress, i); // First click
+                IsWaitingSecondClick = true;
+                DoubleClickTimer = chVTGetSystemTimeX();
+                FirstClickID = i;
+            }
 #endif
+
+// Single key pressed, no combo
+#if BTN_SHORTPRESS && !BTN_DOUBLE_CLICK && !BTN_LONGPRESS
+            AddEvtToQueue(beShortPress, i);  // Add single keypress
+#endif
+
+
 
 #if BTN_LONGPRESS
             LongPressTimer = chVTGetSystemTimeX();
@@ -97,8 +113,8 @@ void ProcessButtons(PinSnsState_t *BtnState, uint32_t Len) {
         } // if press
 #endif
 
-#if 1 // ==== Button Release ====
-#if BTN_COMBO || BTN_RELEASE || BTN_LONG_COMBO
+// ==== Button Release ====
+#if BTN_COMBO || BTN_RELEASE || BTN_LONG_COMBO || (BTN_SHORTPRESS && BTN_LONGPRESS)
         else if(BtnState[i] == BTN_RELEASING_STATE) {
 #if BTN_COMBO || BTN_LONG_COMBO // Check if combo completely released
             if(IsCombo) {
@@ -114,16 +130,20 @@ void ProcessButtons(PinSnsState_t *BtnState, uint32_t Len) {
 #endif
                 return; // do not send release evt (if enabled)
             } // if combo
-#endif
+#endif // BTN_COMBO || BTN_LONG_COMBO
+
 #if BTN_RELEASE // Send evt if not combo and not longpress
 #if BTN_LONGPRESS
             if(!IsLongPress[i])
 #endif
                 AddEvtToQueue(beRelease, i);
+#endif // BTN_RELEASE
+
+#if BTN_SHORTPRESS && BTN_LONGPRESS
+            if(!IsLongPress[i]) AddEvtToQueue(beShortPress, i);  // Add single keypress
 #endif
         }
-#endif // if combo or release
-#endif
+#endif //BTN_COMBO || BTN_RELEASE || BTN_LONG_COMBO || (BTN_SHORTPRESS && BTN_LONGPRESS)
 
 #if 1 // ==== Holddown ====
 #if BTN_LONGPRESS || BTN_REPEAT || BTN_LONG_COMBO
@@ -135,7 +155,7 @@ void ProcessButtons(PinSnsState_t *BtnState, uint32_t Len) {
 #endif
             ) {
 //                Uart.Printf("Elapsed %u\r", chVTTimeElapsedSinceX(LongPressTimer));
-                if(chVTTimeElapsedSinceX(LongPressTimer) >= MS2ST(BTN_LONGPRESS_DELAY_MS)) {
+                if(chVTTimeElapsedSinceX(LongPressTimer) >= TIME_MS2I(BTN_LONGPRESS_DELAY_MS)) {
                     IsLongPress[i] = true;
                     AddEvtToQueue(beLongPress, i);
                 }
@@ -162,24 +182,14 @@ void ProcessButtons(PinSnsState_t *BtnState, uint32_t Len) {
 
 #if BTN_REPEAT // Check if repeat
             if(!IsRepeating[i]) {
-                if(chVTTimeElapsedSinceX(RepeatTimer) >= MS2ST(BTN_DELAY_BEFORE_REPEAT_MS)) {
+                if(TimeElapsed(&RepeatTimer, BTN_DELAY_BEFORE_REPEAT_MS)) {
                     IsRepeating[i] = true;
-#if BTN_COMBO
-                    if(!IsCombo)
-#endif
-                    {
-                        AddEvtToQueue(beRepeat, i);
-                    }
+                    AddEvtToQueue(beRepeat, i);
                 }
             }
             else {
-                if(chVTTimeElapsedSinceX(RepeatTimer) >= MS2ST(BTN_REPEAT_PERIOD_MS)) {
-#if BTN_COMBO
-                    if(!IsCombo)
-#endif
-                    {
-                        AddEvtToQueue(beRepeat, i);
-                    }
+                if(TimeElapsed(&RepeatTimer, BTN_REPEAT_PERIOD_MS)) {
+                    AddEvtToQueue(beRepeat, i);
                 }
             }
 #endif

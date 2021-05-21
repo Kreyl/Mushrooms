@@ -1,12 +1,12 @@
 #pragma once
 
-#include <inttypes.h>
-
 // ==== General ====
-#define BOARD_NAME          "Mushroom5"
-#define APP_NAME            "V5"
+#define BOARD_NAME          "MushroomV5"
+#define APP_NAME            "TouchTest"
 
 // ==== High-level peripery control ====
+#define PILL_ENABLED        FALSE
+#define BEEPER_ENABLED      FALSE
 #define BUTTONS_ENABLED     FALSE
 
 #define SIMPLESENSORS_ENABLED   BUTTONS_ENABLED
@@ -17,7 +17,12 @@
 // Freq of external crystal if any. Leave it here even if not used.
 #define CRYSTAL_FREQ_HZ     12000000
 
-#define SYS_TIM_CLK         (Clk.APB1FreqHz)
+// OS timer settings
+#define STM32_ST_IRQ_PRIORITY   2
+#define STM32_ST_USE_TIMER      2
+#define STM32_TIMCLK1           (Clk.APB1FreqHz)
+
+#define I2C1_ENABLED        PILL_ENABLED
 #define I2C_USE_SEMAPHORE   FALSE
 #define ADC_REQUIRED        FALSE
 
@@ -28,36 +33,57 @@
 #define UART_TX_PIN     9
 #define UART_RX_PIN     10
 
-// LEDs
-#define LED1_R_PIN      { GPIOA, 1, TIM2, 2, invNotInverted, omPushPull, 255 }
-#define LED1_G_PIN      { GPIOA, 2, TIM9, 1, invNotInverted, omPushPull, 255 }
-#define LED1_B_PIN      { GPIOA, 3, TIM9, 2, invNotInverted, omPushPull, 255 }
+// LED
+#define LED_EN_PIN      { GPIOB, 2, omPushPull }
+#define LED_G_PIN       { GPIOB, 1, TIM3, 4, invInverted, omOpenDrain, 255 }
+#define LED_B_PIN       { GPIOB, 0, TIM3, 3, invInverted, omOpenDrain, 255 }
+#define LED_R_PIN       { GPIOB, 5, TIM3, 2, invInverted, omOpenDrain, 255 }
 
-#define LED2_R_PIN      { GPIOA, 5, TIM2, 1, invNotInverted, omPushPull, 255 }
-#define LED2_G_PIN      { GPIOA, 6, TIM3, 1, invNotInverted, omPushPull, 255 }
-#define LED2_B_PIN      { GPIOA, 7, TIM3, 2, invNotInverted, omPushPull, 255 }
+// Buttons
+#define BTN1_PIN        GPIOA, 0, pudPullDown
+#define BTN2_PIN        GPIOA, 1, pudPullDown
+#define BTN3_PIN        GPIOB, 8, pudPullDown
+#define BTN_CNT         3
 
-#define LED3_R_PIN      { GPIOB, 0, TIM3, 3, invNotInverted, omPushPull, 255 }
-#define LED3_G_PIN      { GPIOB, 1, TIM3, 4, invNotInverted, omPushPull, 255 }
-#define LED3_B_PIN      { GPIOB, 6, TIM4, 1, invNotInverted, omPushPull, 255 }
+// Vibro
+#define VIBRO_SETUP     { GPIOB, 12, TIM10, 1, invNotInverted, omPushPull, 99 }
 
-#define LED4_R_PIN      { GPIOB, 7, TIM4, 2, invNotInverted, omPushPull, 255 }
-#define LED4_G_PIN      { GPIOB, 8, TIM4, 3, invNotInverted, omPushPull, 255 }
-#define LED4_B_PIN      { GPIOB, 9, TIM4, 4, invNotInverted, omPushPull, 255 }
+// Beeper
+#define BEEPER_TOP      22
+#define BEEPER_PIN      { GPIOB, 15, TIM11, 1, invNotInverted, omPushPull, BEEPER_TOP }
 
-#define LEDS_CNT        3
+// DIP switch
+#define DIP_SW_CNT      8
+#define DIP_SW1         { GPIOB, 13, pudPullUp }
+#define DIP_SW2         { GPIOB, 14, pudPullUp }
+#define DIP_SW3         { GPIOA,  8, pudPullUp }
+#define DIP_SW4         { GPIOA, 11, pudPullUp }
+#define DIP_SW5         { GPIOA, 15, pudPullUp }
+#define DIP_SW6         { GPIOA, 12, pudPullUp }
+#define DIP_SW7         { GPIOC, 13, pudPullUp }
+#define DIP_SW8         { GPIOC, 14, pudPullUp }
 
-// Button
-#define BTN_PIN         GPIOA, 0, pudPullDown
+// I2C
+#if I2C1_ENABLED
+#define I2C1_GPIO       GPIOB
+#define I2C1_SCL        6
+#define I2C1_SDA        7
+#endif
+
+// Pill power
+#define PILL_PWR_PIN    { GPIOB, 3, omPushPull }
 
 // Radio: SPI, PGpio, Sck, Miso, Mosi, Cs, Gdo0
-#define CC_Setup0       SPI2, GPIOB, 13,14,15, 5, 2
+#define CC_Setup0       SPI1, GPIOA, 5,6,7, GPIOA,4, GPIOA,3
 
 #endif // GPIO
 
-#if 1 // ========================== USART ======================================
-#define CMD_UART        USART1
-#define UART_TXBUF_SZ   256
+#if 1 // ========================= Timer =======================================
+#endif // Timer
+
+#if I2C1_ENABLED // ====================== I2C ================================
+#define I2C1_BAUDRATE   400000
+#define I2C_PILL        i2c1
 #endif
 
 #if ADC_REQUIRED // ======================= Inner ADC ==========================
@@ -80,9 +106,17 @@
 #if 1 // =========================== DMA =======================================
 #define STM32_DMA_REQUIRED  TRUE
 // ==== Uart ====
-#define UART_DMA_TX     STM32_DMA1_STREAM4
-#define UART_DMA_RX     STM32_DMA1_STREAM5
+#define UART_DMA_TX_MODE(Chnl) (STM32_DMA_CR_CHSEL(Chnl) | DMA_PRIORITY_LOW | STM32_DMA_CR_MSIZE_BYTE | STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MINC | STM32_DMA_CR_DIR_M2P | STM32_DMA_CR_TCIE)
+#define UART_DMA_RX_MODE(Chnl) (STM32_DMA_CR_CHSEL(Chnl) | DMA_PRIORITY_MEDIUM | STM32_DMA_CR_MSIZE_BYTE | STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MINC | STM32_DMA_CR_DIR_P2M | STM32_DMA_CR_CIRC)
+#define UART_DMA_TX     STM32_DMA_STREAM_ID(1, 4)
+#define UART_DMA_RX     STM32_DMA_STREAM_ID(1, 5)
 #define UART_DMA_CHNL   0   // Dummy
+
+#if I2C1_ENABLED // ==== I2C ====
+#define I2C1_DMA_TX     STM32_DMA1_STREAM6
+#define I2C1_DMA_RX     STM32_DMA1_STREAM7
+#define I2C1_DMA_CHNL   0   // Dummy
+#endif
 
 #if ADC_REQUIRED
 #define ADC_DMA         STM32_DMA1_STREAM1
@@ -96,3 +130,18 @@
 #endif // ADC
 
 #endif // DMA
+
+#if 1 // ========================== USART ======================================
+#define PRINTF_FLOAT_EN FALSE
+#define UART_TXBUF_SZ   256
+#define UART_RXBUF_SZ   99
+
+#define CMD_UART        USART1
+
+#define UARTS_CNT       1
+
+#define CMD_UART_PARAMS \
+    CMD_UART, UART_GPIO, UART_TX_PIN, UART_GPIO, UART_RX_PIN, \
+    UART_DMA_TX, UART_DMA_RX, UART_DMA_TX_MODE(UART_DMA_CHNL), UART_DMA_RX_MODE(UART_DMA_CHNL)
+
+#endif
