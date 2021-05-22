@@ -1,4 +1,4 @@
-631381702085192
+789026443678040
 Antennas
 ANT_868_10d4x36
 PCB 75.7x37.5, AntPcb 14.8mm
@@ -42,6 +42,13 @@ ANT_868_IFA_SIMPLEJOY
 16
 2
 Antennas
+ANT_868_IFA_SIMPLEJOY_MIRR
+
+
+0
+16
+2
+Antennas
 ANT_868_MEANDER_4HOR_35mm
 
 
@@ -61,13 +68,6 @@ Meander W32 H18
 
 0
 8
-1
-Antennas
-ANT_868_Robotlon
-PCB 75.7x37.5, AntPcb 14.8mm
-
-0
-7
 1
 Antennas
 ANT_868_ROUND_F
@@ -91,11 +91,32 @@ Meander antenna for circular PCB R=29.5
 8
 1
 Antennas
+ANT_868_Robotlon
+PCB 75.7x37.5, AntPcb 14.8mm
+
+0
+7
+1
+Antennas
 ANT_868_SEIDHE
 Meander 868 for 16x36x1.5mm
 
 0
 18
+1
+Antennas
+ANT_868_Spear
+
+
+0
+1
+1
+Antennas
+ANT_868_Spear_inverted
+
+
+0
+1
 1
 Antennas
 ANT_2400_MEANDER
@@ -147,6 +168,41 @@ ANT_YAGEO12x4
 2
 2
 Antennas
+Firefly_868
+
+
+0
+1
+1
+Antennas
+Firefly_2400
+
+
+0
+1
+1
+Antennas
+Flute_868
+
+
+0
+0
+0
+Antennas
+Flute_868_inverted
+
+
+0
+1
+1
+Antennas
+IFA_LoRa_BEST
+
+
+0
+2
+2
+Antennas
 LcktSnd_2d41
 
 
@@ -174,6 +230,34 @@ MagicStick
 0
 1
 1
+BGA
+BGA-153_14x14_11.5x13.0mm
+
+
+0
+153
+153
+BGA
+BGA-294_21x14_12.0x7.5mm
+
+
+0
+167
+167
+BGA
+BGA-529_23x23_15.0x15.0mm
+
+
+0
+396
+396
+BGA
+BGA176+25_15x15_0.65pitch_10x10mm
+
+
+0
+201
+201
 BtnsSwitches
 BTN_4PIN_12mm
 
@@ -210,6 +294,13 @@ BTN_6x6_4x4
 8
 2
 BtnsSwitches
+BTN_2819_SMD
+
+
+0
+4
+2
+BtnsSwitches
 BTN_IT1181A
 2-pin button 6x3x2.5
 
@@ -244,6 +335,27 @@ BUZZER_HPM14A
 0
 2
 2
+BtnsSwitches
+Btn_G78Y
+
+
+0
+6
+2
+BtnsSwitches
+Btn_K51624SA-01
+
+
+0
+8
+3
+BtnsSwitches
+CUS-14TB
+
+
+0
+12
+6
 BtnsSwitches
 DIP_DIP_X4
 
@@ -307,6 +419,13 @@ SW_LKLS7SS12F19G5
 0
 3
 3
+BtnsSwitches
+SW_MSK-12C02
+
+
+0
+9
+4
 BtnsSwitches
 SW_PUSH_6mm
 https://www.omron.com/ecb/products/pdf/en-b3f.pdf
@@ -483,7 +602,28 @@ CAP_0402
 2
 2
 Capacitors
+CAP_0402_large
+
+
+0
+2
+2
+Capacitors
 CAP_0603
+
+
+0
+2
+2
+Capacitors
+CAP_0603_Silks
+
+
+0
+2
+2
+Capacitors
+CAP_0603_large
 
 
 0
@@ -560,19 +700,19 @@ Audio_ST511D01TR
 7
 5
 Connectors
-Barrel
-
-
-0
-3
-3
-Connectors
 BLS2_7R
 
 
 0
 7
 7
+Connectors
+BNC2
+
+
+0
+5
+2
 Connectors
 BNC_R
 
@@ -581,12 +721,26 @@ BNC_R
 4
 3
 Connectors
+Barrel
+
+
+0
+3
+3
+Connectors
 Chequerwise-9
 Chequerwise 9-pin
 
 0
 9
 9
+Connectors
+Concentric_D2d5_9d5_17
+Concentric circles
+
+0
+3
+3
 Connectors
 Concentric_D5xD14
 Concentric circles
@@ -616,6 +770,20 @@ FFC_0d5x8
 10
 9
 Connectors
+FFC_0d5x14_flip
+
+
+0
+16
+15
+Connectors
+FFC_0d5x20_flip
+
+
+0
+22
+21
+Connectors
 FFC_0d5x40_flip
 
 
@@ -623,12 +791,12 @@ FFC_0d5x40_flip
 42
 41
 Connectors
-Hole_2d2x1d1
-
-
+IDC-Header_2x5_P2.54mm_Vertical
+Through hole straight IDC box header, 2x15, 2.54mm pitch, double rows
+Through hole IDC box header THT 2x15 2.54mm double row
 0
-1
-1
+10
+10
 Connectors
 IDC-Header_2x8_P2.54mm_Vertical
 Through hole straight IDC box header, 2x15, 2.54mm pitch, double rows
@@ -686,12 +854,12 @@ NOKIA_ACC
 5
 4
 Connectors
-Pad_2x4_Oval
-Single pad
+PBD2-36
+
 
 0
-1
-1
+36
+36
 Connectors
 PBS-2
 Single-line connector 2-pin
@@ -777,6 +945,13 @@ Double-line 2x4pin @2.54
 8
 8
 Connectors
+PLD-8_LOCK
+Double-line 2x4pin @2.54
+
+0
+8
+8
+Connectors
 PLD-10
 Double-line 2x5pin @2.54
 
@@ -784,12 +959,26 @@ Double-line 2x5pin @2.54
 10
 10
 Connectors
+PLD-20
+Double-line 2x10pin @2.54
+
+0
+20
+20
+Connectors
 PLD-24
 Double-line 2x12pin @2.54
 
 0
 24
 24
+Connectors
+PLS-1Oval
+Connector 1-pin round
+
+0
+1
+1
 Connectors
 PLS-1Rnd
 Connector 1-pin round
@@ -903,6 +1092,34 @@ Single-line 8-pin @2.54
 6
 6
 Connectors
+PLS-6_LOCK
+Single-line 8-pin @2.54
+
+0
+6
+6
+Connectors
+PLS-7
+Single-line 8-pin @2.54
+
+0
+7
+7
+Connectors
+PLS-7-NoHole
+Single-line 8-pin @2.54
+
+0
+7
+7
+Connectors
+PLS-7_LOCK
+Single-line 8-pin @2.54
+
+0
+7
+7
+Connectors
 PLS-8
 Single-line 8-pin @2.54
 
@@ -916,6 +1133,13 @@ Single-line 9-pin @2.54
 0
 9
 9
+Connectors
+PLS-10
+Single-line 9-pin @2.54
+
+0
+10
+10
 Connectors
 PLS2-7
 Single-line 7-pin @2
@@ -938,12 +1162,26 @@ PWL2-02
 2
 2
 Connectors
+Pad_2x4_Oval
+Single pad
+
+0
+1
+1
+Connectors
+Pad_2x4_Rect
+Single pad
+
+0
+1
+1
+Connectors
 RJ11_TJ3-4P4C
 
 
 0
-4
-4
+6
+5
 Connectors
 RJ11_TJ6_6P6C
 
@@ -956,15 +1194,15 @@ RJ12_TJ3-6P6C
 
 
 0
-6
-6
+8
+7
 Connectors
 RJ45_TJ3-8P8C
 
 
 0
-8
-8
+10
+9
 Connectors
 SIL1_ROUND_1MM8
 Connecteurs 2 pins
@@ -993,6 +1231,20 @@ Single-line connector 3-pin
 0
 3
 3
+Connectors
+SLD_3plus2_2D5
+Single-line connector 4-pin
+
+0
+5
+5
+Connectors
+SLD_4_2
+Single-line connector 4-pin
+
+0
+4
+4
 Connectors
 SLD_4_2D5
 Single-line connector 4-pin
@@ -1028,6 +1280,20 @@ Single-line SMD connector 9-pin
 0
 9
 9
+Connectors
+SM11B_SRSS_TB
+
+
+0
+13
+12
+Connectors
+SM15B_SRSS_TB
+
+
+0
+17
+16
 Connectors
 SMA_R
 RF SMA connector
@@ -1078,19 +1344,12 @@ TerminalBlock Header 4 pos @5.08 282814-4
 4
 4
 Connectors
-USBmicro_MOLEX_1050170001
+USBC_10PF-074
 
 
 0
-11
-9
-Connectors
-USBmicro_MOLEX_WM17142
-Molex uUSB, PCB cut needed
-
-0
-11
-9
+16
+13
 Connectors
 USB_AM_PCB
 
@@ -1106,6 +1365,13 @@ USB_A_Fx2
 10
 10
 Connectors
+USB_A_Vertical_110
+
+
+0
+6
+5
+Connectors
 USB_B
 USB conn type B: USBB-1J
 
@@ -1113,19 +1379,33 @@ USB conn type B: USBB-1J
 6
 5
 Connectors
-uUSB_614105150721
-Vertical uUsb through-hole connector
+USB_B_Vertical_1JF
+USB conn type B: USBB-1J
 
 0
-7
-7
+5
+5
 Connectors
-uUSB_Micro5P
+USB_C_MOLEX_1054500101
 
 
 0
-7
-7
+28
+28
+Connectors
+USBmicro_MOLEX_1050170001
+
+
+0
+11
+11
+Connectors
+USBmicro_MOLEX_WM17142
+Molex uUSB, PCB cut needed
+
+0
+11
+9
 Connectors
 W02_Pitch_2d54
 
@@ -1218,6 +1498,13 @@ X977B04
 4
 4
 Connectors
+XY122V-2
+
+
+0
+4
+2
+Connectors
 XY301V-A-2P
 
 
@@ -1238,6 +1525,41 @@ XY302V-04P
 0
 4
 4
+Connectors
+uUSB_614105150721
+Vertical uUsb through-hole connector
+
+0
+7
+7
+Connectors
+uUSB_Micro5P
+
+
+0
+7
+7
+DIP
+DIP-8_296_ELL
+
+
+0
+8
+8
+DIP
+DIP-16_296_ELL
+
+
+0
+16
+16
+Diodes
+DFN1006
+
+
+0
+2
+2
 Diodes
 SMA_DO214AC
 
@@ -1280,6 +1602,27 @@ SOD923
 0
 2
 2
+Display
+7Segx4
+
+
+0
+36
+36
+Display
+Round2_2
+
+
+0
+30
+30
+FFC
+Conn_0d5x8
+
+
+0
+8
+8
 Inductors
 13x13
 
@@ -1295,12 +1638,40 @@ Inductors
 2
 2
 Inductors
+CKST0502
+
+
+0
+2
+2
+Inductors
+CKST0603
+
+
+0
+2
+2
+Inductors
+DLW5ATN111
+
+
+0
+4
+4
+Inductors
 DLW21SN
 
 
 0
 4
 4
+Inductors
+FDV0530
+
+
+0
+2
+2
 Inductors
 IHLP2525
 
@@ -1351,6 +1722,13 @@ IND_1812
 2
 2
 Inductors
+IND_2520
+
+
+0
+2
+2
+Inductors
 IND_SDR1006
 
 
@@ -1359,6 +1737,13 @@ IND_SDR1006
 2
 Inductors
 IND_SRN2512
+
+
+0
+2
+2
+Inductors
+IND_SRN3015
 
 
 0
@@ -1380,6 +1765,13 @@ SDR0805
 2
 Inductors
 SLF60xx
+
+
+0
+2
+2
+Inductors
+SPR2010
 
 
 0
@@ -1428,6 +1820,13 @@ AAx2 battery holder (BH431/BH621)
 2
 2
 Installation
+BATTERY_AAA_X2_PLUS_LEFT
+AAx2 battery holder (BH431/BH621)
+
+0
+2
+2
+Installation
 BATTERY_AAA_X3
 AAAx3 battery holder (BH431A)
 
@@ -1463,13 +1862,6 @@ BAT_HOLDER_BHX1-2032-SM
 3
 2
 Installation
-BreadBoardMini
-
-
-0
-0
-0
-Installation
 BUZZER_HC0903
 
 
@@ -1490,6 +1882,20 @@ BUZZER_HPM14A
 0
 2
 2
+Installation
+BUZZER_KLJ-09650-3027
+
+
+0
+2
+2
+Installation
+BreadBoardMini
+
+
+0
+0
+0
 Installation
 EEMB502030
 
@@ -1568,19 +1974,19 @@ PwrSupp_IRM-60-12
 4
 4
 Installation
-RaspberryPi3
-
-
-0
-44
-41
-Installation
 RUEF600
 
 
 0
 2
 2
+Installation
+RaspberryPi3
+
+
+0
+44
+41
 LEDs
 Cree_J3030
 
@@ -1588,6 +1994,13 @@ Cree_J3030
 0
 2
 2
+LEDs
+Cree_XML
+
+
+0
+3
+3
 LEDs
 EpistarRGB
 
@@ -1623,6 +2036,20 @@ LED_0603_DOUBLE
 0
 4
 4
+LEDs
+LED_0603_ch
+
+
+0
+2
+2
+LEDs
+LED_0603_large
+
+
+0
+2
+2
 LEDs
 LED_0805
 
@@ -1728,6 +2155,55 @@ CREE XP-E LED
 0
 3
 3
+LEDs
+RF_W3S198TS_A41
+
+
+0
+4
+4
+LEDs
+RGB0606
+
+
+0
+4
+4
+LEDs
+RGB1206
+
+
+0
+4
+4
+LEDs
+SMD_R_TEST
+
+
+0
+2
+2
+LEDs
+SMD_R_TEST_1
+
+
+0
+2
+2
+LEDs
+SMD_R_TEST_2
+
+
+0
+2
+2
+LEDs
+TO_2106
+
+
+0
+2
+2
 LGA
 10_2X2
 
@@ -1792,54 +2268,26 @@ QFP TQFP LQFP
 100
 100
 LQFP_TQFP
+QFP-44_10x10_Pitch0.8mm
+
+
+0
+44
+44
+LQFP_TQFP
+QFP-144_20x20_Pitch0.5mm
+
+
+0
+144
+144
+LQFP_TQFP
 TQFP-32_7x7_Pitch0.8mm
 
 
 0
 32
 32
-Modules
-BT_HC0x
-
-
-0
-34
-34
-Modules
-ESP32WROOM32
-
-
-0
-39
-39
-Modules
-ESP8266PCB
-
-
-0
-30
-30
-Modules
-F3188
-
-
-0
-43
-43
-Modules
-SL3333
-
-
-0
-24
-24
-Modules
-ST_SPBT30
-
-
-0
-18
-18
 PCB
 2Holes2_5x1_4_D508
 
@@ -1855,6 +2303,13 @@ FuseShorted
 2
 2
 PCB
+Hole1d6_out2d4mm
+
+
+0
+1
+1
+PCB
 Hole1d8_out3d2mm
 
 
@@ -1863,20 +2318,6 @@ Hole1d8_out3d2mm
 1
 PCB
 Hole1d8_out3mm
-
-
-0
-1
-1
-PCB
-Hole2d2_out3d5mm
-
-
-0
-1
-1
-PCB
-Hole2d4_out4d5mm
 
 
 0
@@ -1897,7 +2338,35 @@ Hole2_out4mm
 1
 1
 PCB
-Hole3d3_out5d5mm
+Hole2d2_out3d5mm
+
+
+0
+1
+1
+PCB
+Hole2d4_out4d4mm
+
+
+0
+1
+1
+PCB
+Hole2d4_out4d5mm
+
+
+0
+1
+1
+PCB
+Hole2d7_out4d2mm
+
+
+0
+1
+1
+PCB
+Hole2d8_out4mm
 
 
 0
@@ -1911,7 +2380,70 @@ Hole3_5_out6mm
 1
 1
 PCB
+Hole3d2_out4d2mm
+
+
+0
+1
+1
+PCB
+Hole3d3_out5d5mm
+
+
+0
+1
+1
+PCB
+Hole3d5_out10mm
+
+
+0
+1
+1
+PCB
+Hole3d6_out4d6mm
+
+
+0
+1
+1
+PCB
+Hole4d4_out6d4mm
+
+
+0
+1
+1
+PCB
+Hole4d5_out6d4mm
+
+
+0
+1
+1
+PCB
 Hole5d1_out11mm
+
+
+0
+1
+1
+PCB
+Hole5d1_out12mm
+
+
+0
+1
+1
+PCB
+Hole5d8_out6d8mm
+
+
+0
+1
+1
+PCB
+Hole6d6_out7d6mm
 
 
 0
@@ -1931,6 +2463,13 @@ Oval3x1.5
 0
 1
 1
+PCB
+Oval3x1.5wHole0d9_x2
+
+
+0
+4
+2
 PCB
 Oval3x1.5wHole0d9mm
 
@@ -1974,9 +2513,23 @@ CONN DEV
 1
 1
 PCB
+Round_8mm_SMD
+Masked
+
+0
+1
+1
+PCB
 Square_1MM5
 Single Square Conn 1.5x1mm
 CONN DEV
+0
+1
+1
+PCB
+TESTPOINT_1MM
+
+
 0
 1
 1
@@ -1988,12 +2541,19 @@ TESTPOINT_1d5MM
 1
 1
 PCB
-TESTPOINT_1MM
+TouchRing_31x42x6
 
 
 0
-1
-1
+6
+6
+PCB
+TouchRing_31x42x6_noshape
+
+
+0
+6
+6
 Pictures
 AmperkaBeetle_12d2x4d4
 
@@ -2265,7 +2825,7 @@ DFN8_2x3
 
 
 0
-12
+9
 9
 QFN_DFN
 DFN12
@@ -2310,13 +2870,6 @@ MLP08
 9
 8
 QFN_DFN
-mrQFN76
-
-
-0
-77
-77
-QFN_DFN
 PQFN6_2x2
 
 
@@ -2331,6 +2884,20 @@ Sz 8x8, Pitch 0.8
 57
 33
 QFN_DFN
+PowerPak1212_8
+
+
+0
+9
+8
+QFN_DFN
+QFN-16_EP_3x3_Pitch0.5mm
+
+
+0
+17
+17
+QFN_DFN
 QFN-20_EP_3x3_Pitch0.4mm
 
 
@@ -2342,8 +2909,50 @@ QFN-28_EP_6x6_Pitch0.65mm
 
 
 0
-46
 29
+29
+QFN_DFN
+QFN-32_EP_5x5_Pitch0.5mm
+
+
+0
+33
+33
+QFN_DFN
+QFN-44_EP_5x5_Pitch0.4mm_PAD2d55
+
+
+0
+45
+45
+QFN_DFN
+QFN-48_EP_5.6x5.6_Pitch0.5mm
+
+
+0
+49
+49
+QFN_DFN
+QFN-48_EP_6x6_Pitch0.4mm
+
+
+0
+64
+49
+QFN_DFN
+QFN-60_EP_7x7_Pitch0.4mm
+
+
+0
+61
+61
+QFN_DFN
+QFN-68_EP_8x8_Pitch0.4mm
+
+
+0
+118
+69
 QFN_DFN
 QFN8
 
@@ -2377,7 +2986,7 @@ QFN20
 
 
 0
-29
+21
 21
 QFN_DFN
 QFN24
@@ -2429,20 +3038,6 @@ QFN40_NOHOLES
 41
 41
 QFN_DFN
-QFN48
-
-
-0
-64
-49
-QFN_DFN
-QFN48_EP_6x6_Pitch0.4mm
-
-
-0
-64
-49
-QFN_DFN
 QFNX
 Quad Flat, No pins, Exposed pad
 QFN TQFN
@@ -2464,12 +3059,12 @@ UFQFPN28
 44
 28
 QFN_DFN
-USBmicro_MOLEX_1050170001
+VSON10
 
 
 0
+19
 11
-9
 QFN_DFN
 WSON8
 
@@ -2484,6 +3079,20 @@ WSON12
 0
 19
 13
+QFN_DFN
+X2QFN_12
+
+
+0
+12
+12
+QFN_DFN
+mrQFN76
+
+
+0
+77
+77
 Quartz
 0503x4-4
 
@@ -2512,6 +3121,13 @@ Quartz
 0
 4
 3
+Quartz
+03225C4_GN
+
+
+0
+4
+4
 Quartz
 HC49_SMD
 
@@ -2556,6 +3172,13 @@ Silmaril
 2
 Resistors
 RES_0402
+
+
+0
+2
+2
+Resistors
+RES_0402_large
 
 
 0
@@ -2666,41 +3289,6 @@ VAR_YRV-R0904N
 0
 5
 4
-Sensors
-TCST1103
-
-
-0
-4
-4
-Sensors
-TSL2591
-
-
-0
-6
-6
-Sensors
-TSOP48xx
-
-
-0
-3
-3
-Sensors
-TSOP48xx_Horiz
-IR Receiver Horizontal position
-
-0
-3
-3
-Sensors
-TSOP752
-
-
-0
-4
-4
 SOT
 SC70
 
@@ -2757,6 +3345,20 @@ SOT23-8
 0
 8
 8
+SOT
+SOT89-5
+
+
+0
+6
+5
+SOT
+SOT143-4
+
+
+0
+4
+4
 SOT
 SOT223
 SOT223 4 pins
@@ -2835,6 +3437,13 @@ SO16 150mil
 16
 16
 SO_DIL_TSSOP
+SO20_300MIL
+
+
+0
+20
+20
+SO_DIL_TSSOP
 SSOP28
 
 
@@ -2870,6 +3479,20 @@ TSSOP20
 20
 20
 SO_DIL_TSSOP
+TSSOP24_150_0635
+
+
+0
+24
+24
+SO_DIL_TSSOP
+TSSOP24_169MIL_P04
+
+
+0
+24
+24
+SO_DIL_TSSOP
 TSSOP24_169_P065
 
 
@@ -2884,12 +3507,12 @@ TSSOP30
 30
 30
 SO_DIL_TSSOP
-uMAX_uSOP10
+TSSOP54_400MIL_P08
 
 
 0
-10
-10
+54
+54
 SO_DIL_TSSOP
 VSSOP8_P0d5
 
@@ -2904,6 +3527,62 @@ VSSOP10
 0
 10
 10
+SO_DIL_TSSOP
+uMAX_uSOP10
+
+
+0
+10
+10
+Sensors
+EE_SX1321
+
+
+0
+6
+6
+Sensors
+KIT3032S
+
+
+0
+6
+6
+Sensors
+TCST1103
+
+
+0
+4
+4
+Sensors
+TSL2591
+
+
+0
+6
+6
+Sensors
+TSOP48xx
+
+
+0
+3
+3
+Sensors
+TSOP48xx_Horiz
+IR Receiver Horizontal position
+
+0
+3
+3
+Sensors
+TSOP752
+
+
+0
+4
+4
 TO
 D-Pak(TO-252AA)
 
